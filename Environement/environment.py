@@ -4,8 +4,8 @@ from MAS.Frustum.frustum import *
 from MAS.influence import *
 from MAS.Behavior.randomBehavior import *
 
-class Environement :
-    """Environement du MAS"""
+class Environment :
+    """Environment du MAS"""
 
     def __init__(self, dim):
         self.dimension = dim

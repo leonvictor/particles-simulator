@@ -1,7 +1,7 @@
-from Environement.environement import *
+from Environement.environment import *
 import time
 
-env = Environement(2)
+env = Environment(2)
 
 for i in range(1):
     env.addAgent()
