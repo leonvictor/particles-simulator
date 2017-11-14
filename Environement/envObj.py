@@ -7,5 +7,6 @@ class EnvObj:
         self._position = Vector(*((0.0,)*environment.dimension))
         self.environment = environment
         self.mass = 1
+        self.charge = 0
 
 
