@@ -1,4 +1,5 @@
 from Environement.envObj import *
+from MAS.Behavior.gravityBehavior import GravityBehavior
 from Others.vector import *
 from MAS.Frustum.radiusFrustum import *
 from time import time
@@ -8,6 +9,8 @@ class Agent(EnvObj):
 
     def __init__(self, environment, frustumType, behavior = None):
         EnvObj.__init__(self, environment)
+        """Temporary initialization for testing purpose"""
+        self.gravityBehavior = GravityBehavior()
         self.behavior = behavior
         self.behavior.agent = self
         self.speed = Vector(*((0.0,)*environment.dimension))
@@ -24,7 +27,11 @@ class Agent(EnvObj):
 
     def act(self):
         if self.behavior is not None:
-            influence = self.behavior.act(self.position, self.environment.getPerception(self.frustum))
+            perceptions = self.environment.getPerception(self.frustum)
+            if not perceptions:
+                influence = self.behavior.act(self.position, perceptions)
+            else:
+                influence = self.gravityBehavior.act(self.position, perceptions)
             influence.agent = self
             self.environment.addInfluence(influence)
 

@@ -6,5 +6,6 @@ class EnvObj:
     def __init__(self, environment):
         self._position = Vector(*((0.0,)*environment.dimension))
         self.environment = environment
+        self.mass = 1
 
 
