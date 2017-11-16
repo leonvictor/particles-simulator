@@ -1,8 +1,8 @@
-from Others.quadTree import *
-from MAS.agent import *
-from MAS.Frustum.frustum import *
-from MAS.influence import *
 from MAS.Behavior.randomBehavior import *
+from MAS.Frustum.frustum import *
+from MAS.agent import *
+from Others.quadTree import *
+
 
 class Environment :
     """Environment du MAS"""
@@ -38,6 +38,8 @@ class Environment :
 
             elif frustum.is_in_frustum(obj):
                     agentPerception.append(obj)
+
+        return agentPerception
 
     def addInfluence(self, influence):
         self.influenceList.append(influence)
