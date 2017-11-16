@@ -1,15 +1,14 @@
+from time import time
+
 import numpy as np
 import scipy as sp
 
 from MAS.influence import *
-from random import uniform
-from Others.vector import *
-from time import time
 
 
 class coulombBehavior:
-    def __init__(self):
-        self.agent = None
+    def __init__(self, agent):
+        self.agent = agent
         self.lastTime = time()
 
     def act(self, position, perception):
@@ -17,7 +16,7 @@ class coulombBehavior:
         interactions = []
         for p in perception:
             k = 1/4*sp.constant.pi*sp.constant.epsilon_0
-            interactions.append(k*(np.absolute(self.agent.charge*p.agent.charge)/(np.linalg.norm(self.agent.position-p.agent.position))**2))
+            interactions.append(k*(np.absolute(self.agent.charge*p.charge)/(np.linalg.norm(self.agent.position-p.position))**2))*(self.agent.position-p.position)*np.linalg(self.agent.position-p.position)
 
         """We need to make sure the mean force is calculated along the right axis"""
         meanforce = np.mean(interactions)
