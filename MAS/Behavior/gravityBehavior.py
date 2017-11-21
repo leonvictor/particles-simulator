@@ -11,19 +11,20 @@ class GravityBehavior:
         self.agent = agent
         self.lastTime = time()
 
-    def act(self, position, perception):
-        acceleration = []
+    def act(self, position, perceptions):
+        target_pos = self.agent.position + self.compute_movement_vector(perceptions)
+        return Influence(self.agent, InfluenceType.MOVE, position=target_pos)
+
+    def compute_movement_vector(self,perceptions):
         interactions = []
         """It's ok to perceive yourself, but not to be attracted by yourself"""
-        if self in perception:
-            perception.remove(self)
-        for p in perception:
+        if self in perceptions:
+            perceptions.remove(self)
+        for p in perceptions:
             """this is necessary for not but shouldn't happen anyway"""
             if p.position.all != self.agent.position.all:
-                interactions.append((scipy.constants.G*((self.agent.mass * p.mass)/(np.linalg.norm(self.agent.position-p.position))**2))*(self.agent.position-p.position)/np.linalg.norm(self.agent.position-p.position))
+                gravity = scipy.constants.G*((self.agent.mass * p.mass)/(np.linalg.norm(self.agent.position-p.position))**2)
+                unit_vector = (self.agent.position-p.position)/np.linalg.norm(self.agent.position-p.position)
+                interactions.append(gravity * unit_vector)
 
-        meanforce = np.mean(interactions)
-
-        """Not sure how to compute the target pos for now"""
-        targetPos = self.agent.position + meanforce
-        return Influence(self.agent, InfluenceType.MOVE, position=targetPos)
+        return np.sum(interactions, axis=0)

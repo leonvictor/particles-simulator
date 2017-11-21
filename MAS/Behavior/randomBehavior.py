@@ -1,7 +1,9 @@
-from MAS.influence import *
 from random import uniform
-from Others.vector import *
 from time import time
+
+from MAS.influence import *
+from Others.vector import *
+
 
 class RandomBehavior:
 

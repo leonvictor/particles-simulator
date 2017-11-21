@@ -1,7 +1,10 @@
 from time import time
 
 from Environement.envObj import *
+from MAS.Behavior.coulombBehavior import CoulombBehavior
+from MAS.Behavior.cumulativeForcesBehavior import CumulativeForcesBehavior
 from MAS.Behavior.gravityBehavior import GravityBehavior
+from MAS.Behavior.vanDerWaalsBehavior import VanDerWaalsBehavior
 from MAS.Frustum.radiusFrustum import *
 from Others.vector import *
 
@@ -12,6 +15,9 @@ class Agent(EnvObj):
         EnvObj.__init__(self, environment)
         """Temporary initialization for testing purpose"""
         self.gravityBehavior = GravityBehavior(self)
+        self.coulombBehavior = CoulombBehavior(self)
+        self.vanDerWaalsBehavior = VanDerWaalsBehavior(self)
+        self.cumulativeForcesBehavior = CumulativeForcesBehavior(self)
         self.behavior = behavior
         self.behavior.agent = self
         self.speed = Vector(*((0.0,)*environment.dimension))
@@ -21,7 +27,7 @@ class Agent(EnvObj):
         self.lastPosition = self.position
 
         if frustumType == FrustumType.RadiusFrustum:
-            self.frustum = RadiusFrustum(self, 5)
+            self.frustum = RadiusFrustum(self, 100)
         print("agent créé")
 
 
@@ -32,7 +38,10 @@ class Agent(EnvObj):
             if not perceptions or len(perceptions)<=1:
                 influence = self.behavior.act(self.position, perceptions)
             else:
-                influence = self.gravityBehavior.act(self.position, perceptions)
+                #influence = self.coulombBehavior.act(self.position, perceptions)
+                #influence = self.gravityBehavior.act(self.position, perceptions)
+                #influence = self.vanDerWaalsBehavior.act(self.position, perceptions)
+                influence = self.cumulativeForcesBehavior.act(self.position, perceptions)
             influence.agent = self
             self.environment.addInfluence(influence)
 
