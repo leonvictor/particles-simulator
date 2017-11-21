@@ -1,4 +1,7 @@
+import numpy as np
+
 from MAS.Frustum.frustum import *
+
 
 class RadiusFrustum(Frustum):
     """Frustum circulaire/spherique ..."""
@@ -8,7 +11,7 @@ class RadiusFrustum(Frustum):
         self.radius = radius
 
     def is_in_frustum(self, envObj):
-        if (envObj.position - self.agent.position).norm() <= self.radius:
+        if np.linalg.norm(envObj.position - self.agent.position) <= self.radius:
             return True
         else:
             return False

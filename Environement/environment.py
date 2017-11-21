@@ -14,6 +14,8 @@ class Environment :
         self.treeDepth = 0
         self.quadTree = QuadTree(dim, self.treeDepth)
         self.influenceList = []
+        """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
+        self.relative_permittivity = 1.0006
 
     def actualize(self):
         for agent in self.agentList:
