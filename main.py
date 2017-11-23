@@ -1,13 +1,31 @@
 from Environement.environment import *
 import time
+import threading
+import _thread
+from GUI.Gui import *
 
-env = Environment(2)
+lock = threading.Lock()
+env = Environment(2, lock)
+
+a = Gui(env.quadTree, lock)
 
 for i in range(10):
     env.addAgent()
 
-time.sleep(0.01)
-for i in range(10000000):
-    env.actualize()
+continuer = True
+
+def runMAS():
     time.sleep(0.01)
+    while a:
+        env.actualize()
+        time.sleep(0.01)
+
+
+_thread.start_new_thread(runMAS, ())
+a.run()
+del a
+
+
+
+
 

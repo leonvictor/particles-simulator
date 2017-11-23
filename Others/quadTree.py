@@ -3,7 +3,7 @@
 class QuadTree:
 
     def __init__(self, dim, depth):
-
+        self.location = 0
         self.nodes = []
 
         for i in range(dim):
@@ -15,3 +15,13 @@ class QuadTree:
 
     def remove(self, other):
         self.nodes.remove(other)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.location == len(self.nodes):
+            raise StopIteration
+        value = self.nodes[self.location]
+        self.location += 1
+        return value

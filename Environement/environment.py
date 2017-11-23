@@ -7,7 +7,8 @@ from Others.quadTree import *
 class Environment :
     """Environment du MAS"""
 
-    def __init__(self, dim):
+    def __init__(self, dim, lock):
+        self.lock = lock
         self.dimension = dim
         self.agentList = []
         self.objectList = []
@@ -22,10 +23,12 @@ class Environment :
             agent.act()
 
         length = len(self.influenceList)
-        for i in range(length):
-            influence = self.influenceList.pop()
-            influence = self.checkInfluence(influence)
-            self.apply(influence)
+
+        with self.lock:
+            for i in range(length):
+                influence = self.influenceList.pop()
+                influence = self.checkInfluence(influence)
+                self.apply(influence)
 
     def getPerception(self, frustum):
 
