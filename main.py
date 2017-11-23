@@ -9,7 +9,7 @@ env = Environment(2, lock)
 
 a = Gui(env.quadTree, lock)
 
-for i in range(30):
+for i in range(50):
     env.addAgent()
 
 continuer = True
