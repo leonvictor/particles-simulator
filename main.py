@@ -9,7 +9,7 @@ env = Environment(2, lock)
 
 a = Gui(env.quadTree, lock)
 
-for i in range(10):
+for i in range(30):
     env.addAgent()
 
 continuer = True
@@ -18,7 +18,6 @@ def runMAS():
     time.sleep(0.01)
     while a:
         env.actualize()
-        time.sleep(0.01)
 
 
 _thread.start_new_thread(runMAS, ())

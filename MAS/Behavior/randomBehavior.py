@@ -15,7 +15,7 @@ class RandomBehavior:
 
         acceleration = []
         for i in range(len(self.agent.acceleration)):
-            acceleration.append(uniform(-0.01, 0.01)+self.agent.acceleration[i]/100)
+            acceleration.append(uniform(-100, 100)+self.agent.acceleration[i]/10000)
 
         self.agent.acceleration = Vector(*tuple(acceleration))
         dt = self.agent.deltaTime

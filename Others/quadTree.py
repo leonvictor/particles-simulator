@@ -21,6 +21,7 @@ class QuadTree:
 
     def __next__(self):
         if self.location == len(self.nodes):
+            self.location = 0
             raise StopIteration
         value = self.nodes[self.location]
         self.location += 1

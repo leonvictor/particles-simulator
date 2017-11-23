@@ -25,6 +25,7 @@ class Agent(EnvObj):
         self.deltaTime = 0.01
         self.lastCallTime = time()
         self.lastPosition = self.position
+        self.firsTime = True
 
         if frustumType == FrustumType.RadiusFrustum:
             self.frustum = RadiusFrustum(self, 100)
@@ -35,22 +36,27 @@ class Agent(EnvObj):
     def act(self):
         if self.behavior is not None:
             perceptions = self.environment.getPerception(self.frustum)
-            if not perceptions or len(perceptions)<=1:
+            if not perceptions or len(perceptions) <= 1:
                 influence = self.behavior.act(self.position, perceptions)
             else:
+                influence = self.behavior.act(self.position, perceptions)
                 #influence = self.coulombBehavior.act(self.position, perceptions)
                 #influence = self.gravityBehavior.act(self.position, perceptions)
                 #influence = self.vanDerWaalsBehavior.act(self.position, perceptions)
-                influence = self.cumulativeForcesBehavior.act(self.position, perceptions)
+                #influence = self.cumulativeForcesBehavior.act(self.position, perceptions)
             influence.agent = self
             self.environment.addInfluence(influence)
 
     def moved(self):
         """"Update speed and deltaTime"""
         now = time()
-        self.deltaTime = now - self.lastCallTime
-        self.lastCallTime = now
-        self.speed = (self.position - self.lastPosition)
+
+        if(self.firsTime):
+            self.firsTime = False;
+        else:
+            self.deltaTime = now - self.lastCallTime
+            self.lastCallTime = now
+            self.speed = (self.position - self.lastPosition)
 
         self.speed = self.speed / self.deltaTime
         self.lastPosition = self.position
