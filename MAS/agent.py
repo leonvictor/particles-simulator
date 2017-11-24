@@ -29,7 +29,7 @@ class Agent(EnvObj):
 
         if frustumType == FrustumType.RadiusFrustum:
             self.frustum = RadiusFrustum(self, 100)
-        print("agent créé")
+        #print("agent créé")
 
 
 
@@ -60,7 +60,7 @@ class Agent(EnvObj):
 
         self.speed = self.speed / self.deltaTime
         self.lastPosition = self.position
-        print("agent moved to {0}".format(self.position))
+        #print("agent moved to {0}".format(self.position))
 
     def _set_position(self, new_position):
         self._position = new_position
