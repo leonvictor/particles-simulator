@@ -3,7 +3,6 @@ from time import time
 from Environement.envObj import *
 from MAS.Behavior.cumulativeForcesBehavior import CumulativeForcesBehavior
 from MAS.Frustum.radiusFrustum import *
-from Others.vector import *
 
 
 class Agent(EnvObj):
@@ -16,8 +15,8 @@ class Agent(EnvObj):
         self.behavior = behavior
         self.initBehavior(behavior)
         self.initBehavior(self.cumulativeForcesBehavior)
-        self.speed = (np.random.rand(self.environment.dimension) - 0.5) * 0
-        self.acceleration = (np.random.rand(self.environment.dimension) - 0.5) * 0
+        self.speed = np.zeros(self.environment.dimension)
+        self.acceleration = np.zeros(self.environment.dimension)
 
         self.lastPosition = self.position
 

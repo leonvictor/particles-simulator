@@ -20,8 +20,9 @@ class Environment :
         #mise à jour du temps
         self.deltaTime = 0.01
         self.lastCallTime = time()
-        self.episode = 0.0
         self.dataStore = DataStore()
+        self.startingTime = self.lastCallTime
+        self.gasConstant = 8.3144598
 
 
     def actualize(self):
@@ -30,7 +31,7 @@ class Environment :
 
         length = len(self.influenceList)
 
-        avrSpeed = Vector(*((0.0,)*self.dimension))
+        avrSpeed = np.zeros(self.dimension)
 
         now = time()
         self.deltaTime = now - self.lastCallTime
@@ -40,11 +41,10 @@ class Environment :
             influence = self.influenceList.pop()
             influence = self.checkInfluence(influence)
             self.apply(influence)
-            avrSpeed += influence.agent.speed
+            avrSpeed += np.linalg.norm(influence.agent.speed)
 
         avrSpeed /= length
-        self.dataStore.speedList[self.episode] = avrSpeed
-        self.episode += 1
+        self.dataStore.speedList[now - self.startingTime] = avrSpeed*agent.molarMass/(3*self.gasConstant)
 
 
 
@@ -62,7 +62,7 @@ class Environment :
                 # TODO : control node before adding
                 nodesToExplore.append(obj)
 
-            elif frustum.is_in_frustum(obj):
+            elif frustum.is_in_frustum(obj) and frustum.agent != obj:
                     agentPerception.append(obj)
 
         return agentPerception

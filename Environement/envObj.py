@@ -1,5 +1,6 @@
 import numpy as np
-from random import uniform
+import scipy.constants as const
+
 
 class EnvObj:
     """Classe représentant un objet de l'environnement"""
@@ -13,6 +14,7 @@ class EnvObj:
         """we need to copy these values from an actual particle"""
         self.mass =  1000000
         self.charge = 300000
+        self.molarMass = const.Avogadro * self.mass
 
         """following values found on the net, for H2 molecules"""
         self.dipole_moment = 1

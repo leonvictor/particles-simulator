@@ -3,6 +3,7 @@ import threading
 import sys
 from random import uniform
 from pygame.locals import *
+import matplotlib.pyplot as plt
 
 from Environement.environment import Environment
 
@@ -32,6 +33,7 @@ class Gui :
         self.listPos = list()
 
 
+
     def run(self):
 
         continuer = 1
@@ -53,6 +55,16 @@ class Gui :
                 self.drawPoint(el.position)
 
             pygame.display.update()
+        self.showTemperature()
+
+    def showTemperature(self):
+        temp = self.env.dataStore.speedList
+
+        plt.plot(list(temp.keys()), temp.values())
+        plt.title("Temperature evolution")
+        plt.xlabel("time (s)")
+        plt.ylabel("temperature")
+        plt.show()
 
     def drawPoint(self, pos):
 
