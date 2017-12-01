@@ -2,6 +2,7 @@ import pygame
 import threading
 import sys
 from random import uniform
+from pygame.locals import *
 
 from Environement.environment import Environment
 
@@ -9,7 +10,7 @@ from Environement.environment import Environment
 class Gui :
 
     def initEnv(self):
-        for i in range(1000):
+        for i in range(70):
             self.env.addAgent()
 
     def __init__(self):
@@ -20,9 +21,9 @@ class Gui :
         pygame.init()
 
         self.info = pygame.display.Info()
-        self.dw = int(self.info.current_w / 2)
-        self.dh = int(self.info.current_h / 2)
-        self.fenetre = pygame.display.set_mode((2*self.dw, 2*self.dh), pygame.FULLSCREEN)
+        self.dw = int(self.info.current_w / 3)
+        self.dh = int(self.info.current_h / 3)
+        self.fenetre = pygame.display.set_mode((2*self.dw, 2*self.dh))
 
         self.bgColor = (255, 255, 255)
         self.fgColor = (0, 0, 0)
@@ -43,8 +44,10 @@ class Gui :
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         continuer = 0
+                elif event.type == QUIT:
+                    continuer = 0
 
-            # self.fenetre.fill(self.bgColor)
+            self.fenetre.fill(self.bgColor)
 
             for el in self.env.quadTree:
                 self.drawPoint(el.position)
