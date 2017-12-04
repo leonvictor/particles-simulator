@@ -1,24 +1,20 @@
 from random import uniform
-from time import time
+
+import numpy as np
 
 from MAS.influence import *
-from Others.vector import *
 
 
 class RandomBehavior:
 
     def __init__(self):
         self.agent = None
-        self.lastTime = time()
+        self.environment = None
 
     def act(self, position, perception):
 
-        acceleration = []
-        for i in range(len(self.agent.acceleration)):
-            acceleration.append(uniform(-5, 5))
-
-        self.agent.acceleration = Vector(*tuple(acceleration))
-        dt = self.agent.deltaTime
+        self.agent.acceleration = (np.random.rand(self.environment.dimension) - 0.5) * 5
+        dt = self.environment.deltaTime
         targetPos = self.agent.acceleration*dt*dt + self.agent.speed*dt + self.agent.position
         return Influence(self.agent, InfluenceType.MOVE, position = targetPos)
 
