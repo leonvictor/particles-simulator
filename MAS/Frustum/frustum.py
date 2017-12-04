@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class FrustumType(Enum):
-    RadiusFrustum = 1000000
+    RadiusFrustum = 1
 
 
 class Frustum:
