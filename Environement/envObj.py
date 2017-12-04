@@ -12,12 +12,13 @@ class EnvObj:
         self.environment = environment
 
         """we need to copy these values from an actual particle"""
-        self.mass =  1000000
+        self.mass = 1000000
         self.charge = 300000
         self.molarMass = const.Avogadro * self.mass
 
         """following values found on the net, for H2 molecules"""
-        self.dipole_moment = 1
+        # use SI units
+        self.dipole_moment = 1 * 3.33564e-30
         self.polarizability = 0.79
 
 
