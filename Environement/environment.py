@@ -25,8 +25,12 @@ class Environment :
         self.gasConstant = 8.3144598
 
 
-    def actualize(self):
+    def actualize(self, mass):
         for agent in self.agentList:
+
+            # send updated values to each agent
+            agent.update_values(mass)
+
             agent.act()
 
         length = len(self.influenceList)

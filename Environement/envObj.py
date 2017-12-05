@@ -12,7 +12,7 @@ class EnvObj:
         self.environment = environment
 
         """we need to copy these values from an actual particle"""
-        self.mass = 1000000
+        self.mass = 10
         self.charge = 300000
         self.molarMass = const.Avogadro * self.mass
 

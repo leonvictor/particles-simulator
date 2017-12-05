@@ -3,6 +3,7 @@ from time import time
 from Environement.envObj import *
 from MAS.Behavior.cumulativeForcesBehavior import CumulativeForcesBehavior
 from MAS.Frustum.radiusFrustum import *
+from scipy import constants as const
 
 
 class Agent(EnvObj):
@@ -55,4 +56,16 @@ class Agent(EnvObj):
     def _get_position(self):
         return self._position
 
+    def _set_mass(self, new_mass):
+        # for realistic values
+        # self._mass = const.pico * new_mass
+        self._mass = new_mass
+    def _get_mass(self):
+        return self._mass
+
+    def update_values(self, mass):
+        # print("my new mass is", mass)
+        self.mass = mass
+
     position = property(_get_position, _set_position)
+    mass = property(_get_mass, _set_mass)

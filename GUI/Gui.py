@@ -14,14 +14,14 @@ from Environement.environment import Environment
 
 class Gui:
 
-    def initEnv(self):
+    def init_env(self):
         for i in range(70):
             self.env.addAgent()
 
     def __init__(self):
         self.env = Environment(2)
 
-        self.initEnv()
+        self.init_env()
 
         pygame.init()
 
@@ -32,11 +32,23 @@ class Gui:
         # self.fenetre = pygame.display.set_mode((2*self.dw, 2*self.dh))
         self.screen = sgc.surface.Screen((2 * self.dw, 2 * self.dh))
 
-        self.btn = sgc.Button(label="Click", pos=(100, 100))
-        self.btn.add(0)
-
-        self.bgColor = (255, 255, 255)
+        # self.btn = sgc.Button(label="Click", pos=(100, 100))
+        # self.btn.add(0)
         self.fgColor = (0, 0, 0)
+        self.bgColor = (255, 255, 255)
+
+        self.mass_scale = sgc.Scale(label="Particle mass",
+                                    label_side="top",
+                                    label_col=self.fgColor,
+                                    pos=(10, 20),
+                                    min=1,
+                                    max=100000000,
+                                    min_step=100,
+                                    max_step=1000
+                                    )
+        self.mass_scale.add(0)
+        self.current_mass_value = 1
+
         # self.fenetre.fill(self.bgColor)
         # self.screen.fill(self.bgColor)
 
@@ -50,7 +62,10 @@ class Gui:
 
         while continuer:
             time = self.clock.tick()
-            self.env.actualize()
+            #probably better not to update values on each step
+            # it will have to do for now !
+            self.env.actualize(self.current_mass_value)
+
             pxarray = pygame.PixelArray(self.screen.image)
 
             for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
@@ -60,19 +75,22 @@ class Gui:
                 #         continuer = 0
                 if event.type == QUIT:
                     continuer = 0
-
+                elif event.type == MOUSEBUTTONUP:
+                    self.current_mass_value = self.mass_scale.value
+                    # if self.mass_scale.value != self.current_mass_value:
+                    #     print (self.mass_scale.value)
             # self.fenetre.fill(self.bgColor)
             self.screen.fill(self.bgColor)
             for el in self.env.quadTree:
-                self.drawPoint(el.position, pxarray)
+                self.draw_point(el.position, pxarray)
 
             # pygame.display.update()
             del pxarray
             sgc.update(time)
             pygame.display.flip()
-        self.showTemperature()
+        self.show_temperature()
 
-    def showTemperature(self):
+    def show_temperature(self):
         temp = self.env.dataStore.speedList
 
         plt.plot(list(temp.keys()), temp.values())
@@ -81,7 +99,7 @@ class Gui:
         plt.ylabel("temperature")
         plt.show()
 
-    def drawPoint(self, pos, pxarray):
+    def draw_point(self, pos, pxarray):
 
         radius = 1
         (x, y) = pos
