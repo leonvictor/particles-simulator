@@ -59,8 +59,11 @@ class Environment:
 
         for obj in agentListToCheck:
 
+<<<<<<< HEAD
             if frustum.is_in_frustum(obj) and frustum.agent != obj:
-
+=======
+            elif frustum.is_in_frustum(obj) and frustum.agent != obj:
+>>>>>>> 7d37877ed506ffea0383ae7c80f1a919e27a44d6
                 agentPerception.append(obj)
 
         return agentPerception
@@ -80,5 +83,9 @@ class Environment:
     def addAgent(self):
         new_agent = Agent(self, RadiusFrustum(100), RandomBehavior())
         self.agentList.append(new_agent)
+<<<<<<< HEAD
         self.envGrid.add(new_agent)
 
+=======
+        self.quadTree.add(new_agent)
+>>>>>>> 7d37877ed506ffea0383ae7c80f1a919e27a44d6
