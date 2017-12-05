@@ -46,7 +46,7 @@ class Environment:
             avrSpeed += np.linalg.norm(influence.agent.speed)
 
         avrSpeed /= length
-        self.dataStore.speedList[now - self.startingTime] = avrSpeed * agent.molarMass / (3 * self.gasConstant)
+        self.dataStore.speedList[now - self.startingTime] = avrSpeed * agent.molar_mass / (3 * self.gasConstant)
 
     def getPerception(self, frustum):
 

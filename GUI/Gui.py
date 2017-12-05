@@ -58,7 +58,6 @@ class Gui:
                                       max_step=1000
                                       )
         self.charge_scale.add(1)
-        self.current_mass_value = 1
 
         # self.fenetre.fill(self.bgColor)
         # self.screen.fill(self.bgColor)

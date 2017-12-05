@@ -14,7 +14,7 @@ class EnvObj:
         """we need to copy these values from an actual particle"""
         self.mass = 10
         self.charge = 300000
-        self.molarMass = const.Avogadro * self.mass
+        self.molar_mass = const.Avogadro * self.mass
 
         """following values found on the net, for H2 molecules"""
         # use SI units
