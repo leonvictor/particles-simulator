@@ -7,7 +7,7 @@ from MAS.Frustum.radiusFrustum import *
 
 class Agent(EnvObj):
 
-    def __init__(self, environment, frustumType, behavior = None):
+    def __init__(self, environment, frustum, behavior = None):
         EnvObj.__init__(self, environment)
         """Temporary initialization for testing purpose"""
 
@@ -20,8 +20,9 @@ class Agent(EnvObj):
 
         self.lastPosition = self.position
 
-        if frustumType == FrustumType.RadiusFrustum:
-            self.frustum = RadiusFrustum(self, 100)
+        self.frustum = frustum
+        self.frustum.agent = self
+
         #print("agent créé")
 
     def initBehavior(self, behavior):
@@ -49,10 +50,10 @@ class Agent(EnvObj):
         #print("agent moved to {0}".format(self.position))
 
     def _set_position(self, new_position):
-        self._position = new_position
+        EnvObj.set_position(self, new_position)
         self.moved()
 
     def _get_position(self):
-        return self._position
+        return EnvObj.get_position(self)
 
     position = property(_get_position, _set_position)

@@ -1,6 +1,4 @@
 import pygame
-import threading
-import sys
 from random import uniform
 from pygame.locals import *
 import matplotlib.pyplot as plt
@@ -51,7 +49,9 @@ class Gui :
 
             self.fenetre.fill(self.bgColor)
 
-            for el in self.env.quadTree:
+            for el in self.env.agentList:
+                self.drawPoint(el.position)
+            for el in self.env.objectList:
                 self.drawPoint(el.position)
 
             pygame.display.update()

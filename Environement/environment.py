@@ -1,9 +1,8 @@
-from MAS.Behavior.randomBehavior import *
-from MAS.Frustum.frustum import *
-from MAS.agent import *
-from Others.quadTree import *
 from Environement.dataStore import *
-
+from MAS.Behavior.randomBehavior import *
+from MAS.agent import *
+from Others.envGrid import  *
+from math import  ceil
 
 class Environment :
     """Environment du MAS"""
@@ -13,7 +12,7 @@ class Environment :
         self.agentList = []
         self.objectList = []
         self.treeDepth = 0
-        self.quadTree = QuadTree(dim, self.treeDepth)
+        self.envGrid = EnvGrid(30)
         self.influenceList = []
         """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
         self.relative_permittivity = 1.0006
@@ -52,18 +51,16 @@ class Environment :
 
         agentPerception = []
 
-        # return agentPerception
+        agentListToCheck = []
+        maxRank = ceil(frustum.radius/self.envGrid.side)
 
-        nodesToExplore = [list(self.quadTree.nodes)]
+        agentListToCheck = self.envGrid.getListFromRank(frustum.agent.gridPos, maxRank)
 
-        for obj in nodesToExplore.pop():
 
-            if obj is QuadTree:
-                # TODO : control node before adding
-                nodesToExplore.append(obj)
+        for obj in agentListToCheck:
 
-            elif frustum.is_in_frustum(obj) and frustum.agent != obj:
-                    agentPerception.append(obj)
+            if frustum.is_in_frustum(obj) and frustum.agent != obj:
+                agentPerception.append(obj)
 
         return agentPerception
 
@@ -81,7 +78,7 @@ class Environment :
 
 
     def addAgent(self):
-        new_agent = Agent(self, FrustumType.RadiusFrustum, RandomBehavior())
+        new_agent = Agent(self, RadiusFrustum(100), RandomBehavior())
         self.agentList.append(new_agent)
-        self.quadTree.add(new_agent)
+        self.envGrid.add(new_agent)
 
