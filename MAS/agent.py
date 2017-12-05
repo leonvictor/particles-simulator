@@ -60,12 +60,21 @@ class Agent(EnvObj):
         # for realistic values
         # self._mass = const.pico * new_mass
         self._mass = new_mass
+
     def _get_mass(self):
         return self._mass
 
-    def update_values(self, mass):
+    def _get_charge(self):
+        return self._charge
+
+    def _set_charge(self, new_charge):
+        self._charge = new_charge
+
+    def update_values(self, mass, charge):
         # print("my new mass is", mass)
         self.mass = mass
+        self.charge = charge
 
     position = property(_get_position, _set_position)
     mass = property(_get_mass, _set_mass)
+    charge = property(_get_charge, _set_charge)

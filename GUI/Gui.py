@@ -2,10 +2,7 @@ import pygame
 from pygame.locals import *
 
 import sgc
-from sgc.locals import *
 
-import threading
-import sys
 from random import uniform
 import matplotlib.pyplot as plt
 
@@ -23,20 +20,22 @@ class Gui:
 
         self.init_env()
 
+        # Initialize sliders (and actual starting values) here
+        self.current_mass_value = 1
+        self.current_charge_value = 1
+
         pygame.init()
 
         self.info = pygame.display.Info()
         self.dw = int(self.info.current_w / 3)
         self.dh = int(self.info.current_h / 3)
 
-        # self.fenetre = pygame.display.set_mode((2*self.dw, 2*self.dh))
         self.screen = sgc.surface.Screen((2 * self.dw, 2 * self.dh))
 
-        # self.btn = sgc.Button(label="Click", pos=(100, 100))
-        # self.btn.add(0)
         self.fgColor = (0, 0, 0)
         self.bgColor = (255, 255, 255)
 
+        # Particle mass scale
         self.mass_scale = sgc.Scale(label="Particle mass",
                                     label_side="top",
                                     label_col=self.fgColor,
@@ -47,6 +46,18 @@ class Gui:
                                     max_step=1000
                                     )
         self.mass_scale.add(0)
+
+        # Particle charge scale
+        self.charge_scale = sgc.Scale(label="Particle charge",
+                                      label_side="top",
+                                      label_col=self.fgColor,
+                                      pos=(10, 90),
+                                      min=1,
+                                      max=100000000,
+                                      min_step=100,
+                                      max_step=1000
+                                      )
+        self.charge_scale.add(1)
         self.current_mass_value = 1
 
         # self.fenetre.fill(self.bgColor)
@@ -62,29 +73,31 @@ class Gui:
 
         while continuer:
             time = self.clock.tick()
-            #probably better not to update values on each step
+            # probably better not to update values on each step
             # it will have to do for now !
-            self.env.actualize(self.current_mass_value)
+
+            self.env.actualize(mass=self.current_mass_value, charge=self.current_charge_value)
 
             pxarray = pygame.PixelArray(self.screen.image)
 
             for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
                 sgc.event(event)
-                # if event.type == pygame.KEYDOWN:
-                #     if event.key == pygame.K_ESCAPE:
-                #         continuer = 0
-                if event.type == QUIT:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        continuer = 0
+                elif event.type == QUIT:
                     continuer = 0
                 elif event.type == MOUSEBUTTONUP:
                     self.current_mass_value = self.mass_scale.value
+                    self.current_charge_value = self.charge_scale.value
+
                     # if self.mass_scale.value != self.current_mass_value:
                     #     print (self.mass_scale.value)
-            # self.fenetre.fill(self.bgColor)
+
             self.screen.fill(self.bgColor)
             for el in self.env.quadTree:
                 self.draw_point(el.position, pxarray)
 
-            # pygame.display.update()
             del pxarray
             sgc.update(time)
             pygame.display.flip()
