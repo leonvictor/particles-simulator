@@ -23,10 +23,13 @@ class Environment:
         self.startingTime = self.lastCallTime
         self.gasConstant = 8.3144598
 
-    def actualize(self, mass, charge):
+    def actualize(self, mass, charge, polarizability, dipole_moment):
         for agent in self.agentList:
             # send updated values to each agent
-            agent.update_values(mass=mass, charge=charge)
+            agent.update_values(mass=mass,
+                                charge=charge,
+                                polarizability=polarizability,
+                                dipole_moment=dipole_moment)
 
             agent.act()
 

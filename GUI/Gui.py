@@ -23,6 +23,8 @@ class Gui:
         # Initialize sliders (and actual starting values) here
         self.current_mass_value = 1
         self.current_charge_value = 1
+        self.current_dipole_moment = 1
+        self.current_polarizability = 1
 
         pygame.init()
 
@@ -59,6 +61,28 @@ class Gui:
                                       )
         self.charge_scale.add(1)
 
+        self.dipole_moment_scale = sgc.Scale(label="Particle dipole moment",
+                                             label_side="top",
+                                             label_col=self.fgColor,
+                                             pos=(10, 160),
+                                             min=1,
+                                             max=100000000,
+                                             min_step=100,
+                                             max_step=1000
+                                             )
+        self.dipole_moment_scale.add(2)
+
+        self.polarizability_scale = sgc.Scale(label="Particle polarizability",
+                                              label_side="top",
+                                              label_col=self.fgColor,
+                                              pos=(10, 230),
+                                              min=1,
+                                              max=100000000,
+                                              min_step=100,
+                                              max_step=1000
+                                              )
+        self.polarizability_scale.add(3)
+
         # self.fenetre.fill(self.bgColor)
         # self.screen.fill(self.bgColor)
 
@@ -75,7 +99,10 @@ class Gui:
             # probably better not to update values on each step
             # it will have to do for now !
 
-            self.env.actualize(mass=self.current_mass_value, charge=self.current_charge_value)
+            self.env.actualize(mass=self.current_mass_value,
+                               charge=self.current_charge_value,
+                               polarizability=self.current_polarizability,
+                               dipole_moment=self.current_dipole_moment)
 
             pxarray = pygame.PixelArray(self.screen.image)
 
@@ -89,6 +116,8 @@ class Gui:
                 elif event.type == MOUSEBUTTONUP:
                     self.current_mass_value = self.mass_scale.value
                     self.current_charge_value = self.charge_scale.value
+                    self.current_dipole_moment = self.dipole_moment_scale.value
+                    self.current_polarizability = self.polarizability_scale.value
 
                     # if self.mass_scale.value != self.current_mass_value:
                     #     print (self.mass_scale.value)

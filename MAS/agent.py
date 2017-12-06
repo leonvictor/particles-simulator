@@ -72,11 +72,27 @@ class Agent(EnvObj):
     def _get_charge(self):
         return self._charge
 
-    def update_values(self, mass, charge):
+    def _set_polarizability(self, new_polarizability):
+        self._polarizability = new_polarizability
+
+    def _get_polarizability(self):
+        return self._polarizability
+
+    def _set_dipole_moment(self, new_dipole_moment):
+        self._dipole_moment = new_dipole_moment
+
+    def _get_dipole_moment(self):
+        return self._dipole_moment
+
+    def update_values(self, mass, charge,polarizability, dipole_moment):
         # print("my new mass is", mass)
         self.mass = mass
         self.charge = charge
+        self.dipole_moment = dipole_moment
+        self.polarizability = polarizability
 
     position = property(_get_position, _set_position)
     mass = property(_get_mass, _set_mass)
     charge = property(_get_charge, _set_charge)
+    polarizability = property(_get_polarizability, _set_polarizability)
+    dipole_moment = property(_get_dipole_moment, _set_dipole_moment)
