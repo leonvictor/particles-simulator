@@ -51,9 +51,9 @@ class Gui:
                                     label_col=self.fgColor,
                                     pos=(10, 20),
                                     min=1,
-                                    max=1000000,
-                                    min_step=10,
-                                    max_step=100
+                                    max=100,
+                                    min_step=1,
+                                    max_step=99
                                     )
         self.mass_scale.add(0)
 
@@ -63,9 +63,9 @@ class Gui:
                                       label_col=self.fgColor,
                                       pos=(10, 90),
                                       min=1,
-                                      max=1000000,
-                                      min_step=10,
-                                      max_step=10
+                                      max=100,
+                                      min_step=1,
+                                      max_step=99
                                       )
         self.charge_scale.add(1)
 
