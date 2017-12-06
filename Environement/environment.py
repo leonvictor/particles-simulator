@@ -60,6 +60,8 @@ class Environment:
         agentListToCheck = self.envGrid.getListFromRank(frustum.agent.gridPos, maxRank)
 
 
+        return agentListToCheck
+
         for obj in agentListToCheck:
 
             if frustum.is_in_frustum(obj) and frustum.agent != obj:
@@ -81,7 +83,7 @@ class Environment:
             influence.agent.position = influence.position
 
     def addAgent(self):
-        new_agent = Agent(self, RadiusFrustum(100), RandomBehavior())
+        new_agent = Agent(self, RadiusFrustum(500), RandomBehavior())
         self.agentList.append(new_agent)
         self.envGrid.add(new_agent)
 

@@ -12,7 +12,7 @@ from Environement.environment import Environment
 class Gui:
 
     def init_env(self):
-        for i in range(70):
+        for i in range(60):
             self.env.addAgent()
 
     def __init__(self):
@@ -43,9 +43,9 @@ class Gui:
                                     label_col=self.fgColor,
                                     pos=(10, 20),
                                     min=1,
-                                    max=100000000,
-                                    min_step=100,
-                                    max_step=1000
+                                    max=1000000,
+                                    min_step=10,
+                                    max_step=100
                                     )
         self.mass_scale.add(0)
 
@@ -55,9 +55,9 @@ class Gui:
                                       label_col=self.fgColor,
                                       pos=(10, 90),
                                       min=1,
-                                      max=100000000,
-                                      min_step=100,
-                                      max_step=1000
+                                      max=1000000,
+                                      min_step=10,
+                                      max_step=10
                                       )
         self.charge_scale.add(1)
 
