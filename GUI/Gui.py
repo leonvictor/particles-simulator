@@ -5,6 +5,7 @@ import sgc
 
 from random import uniform
 import matplotlib.pyplot as plt
+from sgc.widgets._locals import GUI
 
 from Environement.environment import Environment
 
@@ -25,6 +26,7 @@ class Gui:
         self.current_charge_value = 1
         self.current_dipole_moment = 1
         self.current_polarizability = 1
+        self.sim_running = False
 
         pygame.init()
 
@@ -37,6 +39,12 @@ class Gui:
         self.fgColor = (0, 0, 0)
         self.bgColor = (255, 255, 255)
 
+        btn = sgc.Button(label="Run/Pause",
+                         pos=(10,self.info.current_h/3 - 20)
+                         )
+
+        btn.on_click = self.change_sim_state
+        btn.add(5)
         # Particle mass scale
         self.mass_scale = sgc.Scale(label="Particle mass",
                                     label_side="top",
@@ -91,7 +99,6 @@ class Gui:
         self.listPos = list()
 
     def run(self):
-
         continuer = 1
 
         while continuer:
@@ -99,15 +106,18 @@ class Gui:
             # probably better not to update values on each step
             # it will have to do for now !
 
-            self.env.actualize(mass=self.current_mass_value,
-                               charge=self.current_charge_value,
-                               polarizability=self.current_polarizability,
-                               dipole_moment=self.current_dipole_moment)
+            if self.sim_running:
+                self.env.actualize(mass=self.current_mass_value,
+                                   charge=self.current_charge_value,
+                                   polarizability=self.current_polarizability,
+                                   dipole_moment=self.current_dipole_moment)
 
             pxarray = pygame.PixelArray(self.screen.image)
 
             for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
                 sgc.event(event)
+                if event.type == GUI:
+                    print(event)
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         continuer = 0
@@ -123,15 +133,21 @@ class Gui:
                     #     print (self.mass_scale.value)
 
             self.screen.fill(self.bgColor)
+
             for el in self.env.agentList:
                 self.draw_point(el.position, pxarray)
             for el in self.env.objectList:
                 self.draw_point(el.position, pxarray)
 
             del pxarray
+
             sgc.update(time)
             pygame.display.flip()
+
         self.show_temperature()
+
+    def change_sim_state(self):
+        self.sim_running = not self.sim_running
 
     def show_temperature(self):
         temp = self.env.dataStore.speedList
