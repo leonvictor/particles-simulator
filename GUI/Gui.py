@@ -102,7 +102,7 @@ class Gui:
 
 
 
-    def run_sequence(self):
+    def run_sequence(self, nb_occurences, nb_sequences):
         continuer = 1
         for mass in range(0, 101, 5):
             if not continuer:
@@ -118,58 +118,62 @@ class Gui:
                                 break
 
                         continuer = 1
-                        self.nb_sequences = 10
-                        self.sim_running = True
 
-                        self.init_env()
+                        for i in range(0, nb_occurences):
+                            if not continuer:
+                                break
+                            self.nb_sequences = nb_sequences
+                            self.sim_running = True
 
-                        while continuer and (self.nb_sequences != 0):
-                            time = self.clock.tick()
-                            # probably better not to update values on each step
-                            # it will have to do for now !
+                            self.init_env()
 
-                            if self.sim_running:
-                                self.env.actualize(mass=self.current_mass_value,
-                                                   charge=self.current_charge_value,
-                                                   polarizability=self.current_polarizability,
-                                                   dipole_moment=self.current_dipole_moment)
+                            while continuer and (self.nb_sequences != 0):
+                                time = self.clock.tick()
+                                # probably better not to update values on each step
+                                # it will have to do for now !
 
-                            pxarray = pygame.PixelArray(self.screen.image)
+                                if self.sim_running:
+                                    self.env.actualize(mass=self.current_mass_value,
+                                                       charge=self.current_charge_value,
+                                                       polarizability=self.current_polarizability,
+                                                       dipole_moment=self.current_dipole_moment)
 
-                            for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
-                                sgc.event(event)
-                                if event.type == GUI:
-                                    print(event)
-                                if event.type == pygame.KEYDOWN:
-                                    if event.key == pygame.K_ESCAPE:
+                                pxarray = pygame.PixelArray(self.screen.image)
+
+                                for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
+                                    sgc.event(event)
+                                    if event.type == GUI:
+                                        print(event)
+                                    if event.type == pygame.KEYDOWN:
+                                        if event.key == pygame.K_ESCAPE:
+                                            continuer = 0
+                                    elif event.type == QUIT:
                                         continuer = 0
-                                elif event.type == QUIT:
-                                    continuer = 0
-                                elif event.type == MOUSEBUTTONUP:
-                                    self.current_mass_value = self.mass_scale.value
-                                    self.current_charge_value = self.charge_scale.value
-                                    self.current_dipole_moment = self.dipole_moment_scale.value
-                                    self.current_polarizability = self.polarizability_scale.value
+                                    elif event.type == MOUSEBUTTONUP:
+                                        self.current_mass_value = self.mass_scale.value
+                                        self.current_charge_value = self.charge_scale.value
+                                        self.current_dipole_moment = self.dipole_moment_scale.value
+                                        self.current_polarizability = self.polarizability_scale.value
 
-                                    # if self.mass_scale.value != self.current_mass_value:
-                                    #     print (self.mass_scale.value)
+                                        # if self.mass_scale.value != self.current_mass_value:
+                                        #     print (self.mass_scale.value)
 
-                            self.screen.fill(self.bgColor)
+                                self.screen.fill(self.bgColor)
 
-                            for el in self.env.agentList:
-                                self.draw_point(el.position, pxarray)
-                            for el in self.env.objectList:
-                                self.draw_point(el.position, pxarray)
+                                for el in self.env.agentList:
+                                    self.draw_point(el.position, pxarray)
+                                for el in self.env.objectList:
+                                    self.draw_point(el.position, pxarray)
 
-                            del pxarray
+                                del pxarray
 
-                            sgc.update(time)
-                            pygame.display.flip()
+                                sgc.update(time)
+                                pygame.display.flip()
 
-                            if self.nb_sequences > 0:
-                                self.nb_sequences -= 1
+                                if self.nb_sequences > 0:
+                                    self.nb_sequences -= 1
 
-                        #self.show_temperature()
+                            #self.show_temperature()
 
     def run(self):
 

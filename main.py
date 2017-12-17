@@ -7,7 +7,7 @@ from GUI.Gui import *
 
 a = Gui()
 
-a.run_sequence()
+a.run_sequence(30, 100)
 # a.run()
 
 del a

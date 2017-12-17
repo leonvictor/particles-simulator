@@ -1,7 +1,7 @@
 from Environement.dataStore import *
 from MAS.Behavior.randomBehavior import *
 from MAS.agent import *
-from Others.envGrid import  *
+from Environement.envGrid import  *
 from math import  ceil
 
 class Environment:
@@ -38,8 +38,6 @@ class Environment:
 
         avrSpeed = np.zeros(self.dimension)
 
-        self.sequence += 1
-
         for i in range(length):
             influence = self.influenceList.pop()
             influence = self.checkInfluence(influence)
@@ -47,7 +45,12 @@ class Environment:
             avrSpeed += np.linalg.norm(influence.agent.speed)
 
         avrSpeed /= length
-        self.dataStore.speedList[self.sequence] = avrSpeed * agent.molar_mass / (3 * self.gasConstant)
+        self.dataStore.speedList[self.sequence] = avrSpeed * agent.molar_mass \
+                                                  / (3 * self.gasConstant)
+
+        self.envGrid.save(str(mass) + "_" + str(charge) + "_" + str(polarizability) +
+                          "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
+        self.sequence += 1
 
     def getPerception(self, frustum):
 

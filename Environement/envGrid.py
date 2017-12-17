@@ -1,4 +1,6 @@
-
+import csv
+import os
+from pathlib import Path
 
 class EnvGrid:
 
@@ -77,3 +79,36 @@ class EnvGrid:
             result.extend(self.buildList(el, rank, leng, i+1))
 
         return result
+
+
+
+    def save(self, name):
+
+        fieldnames = ['case, nb_agents']
+
+        data = []
+
+        for a in self.grid.items():
+            b = [a[0], len(a[1])]
+            data.append(b)
+
+        path = os.getcwd() + "\\csv"
+
+        os.makedirs(path, exist_ok=True)
+
+        path += "\\" + name
+        extension = ".csv"
+        cmpt = 0
+        while Path(path + str(cmpt) + extension).is_file():
+            cmpt += 1
+
+        self.WriteListToCSV(path + str(cmpt) + extension, fieldnames, data)
+
+
+    def WriteListToCSV(self, csv_file, csv_columns, data_list):
+
+        with open(csv_file, 'w') as csvfile:
+            writer = csv.writer(csvfile, dialect='excel', quoting=csv.QUOTE_NONNUMERIC)
+            writer.writerow(csv_columns)
+            for data in data_list:
+                writer.writerow(data)
