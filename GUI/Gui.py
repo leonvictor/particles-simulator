@@ -13,13 +13,17 @@ from Environement.environment import Environment
 class Gui:
 
     def init_env(self):
+        if self.env is not None:
+            del self.env
+        self.env = Environment(self.env_dim)
+
         for i in range(60):
             self.env.addAgent()
 
     def __init__(self):
-        self.env = Environment(2)
 
-        self.init_env()
+        self.env = None
+        self.env_dim = 2
 
         # Initialize sliders (and actual starting values) here
         self.current_mass_value = 1
@@ -27,12 +31,12 @@ class Gui:
         self.current_dipole_moment = 1
         self.current_polarizability = 1
         self.sim_running = False
+        self.nb_sequences = -1
 
         pygame.init()
-
         self.info = pygame.display.Info()
-        self.dw = int(self.info.current_w / 3)
-        self.dh = int(self.info.current_h / 3)
+        self.dw = int(self.info.current_w/2)
+        self.dh = int(self.info.current_h/2)
 
         self.screen = sgc.surface.Screen((2 * self.dw, 2 * self.dh))
 
@@ -96,55 +100,136 @@ class Gui:
 
         self.clock = pygame.time.Clock()
 
-        self.listPos = list()
+
+
+    def run_sequence(self):
+        continuer = 1
+        for mass in range(0, 101, 5):
+            if not continuer:
+                break
+            for charge in range(0, 101, 5):
+                if not continuer:
+                    break
+                for dipole_moment in range(0, 101, 5):
+                    if not continuer:
+                        break
+                    for polarizability in range(0, 101, 5):
+                        if not continuer:
+                                break
+
+                        continuer = 1
+                        self.nb_sequences = 10
+                        self.sim_running = True
+
+                        self.init_env()
+
+                        while continuer and (self.nb_sequences != 0):
+                            time = self.clock.tick()
+                            # probably better not to update values on each step
+                            # it will have to do for now !
+
+                            if self.sim_running:
+                                self.env.actualize(mass=self.current_mass_value,
+                                                   charge=self.current_charge_value,
+                                                   polarizability=self.current_polarizability,
+                                                   dipole_moment=self.current_dipole_moment)
+
+                            pxarray = pygame.PixelArray(self.screen.image)
+
+                            for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
+                                sgc.event(event)
+                                if event.type == GUI:
+                                    print(event)
+                                if event.type == pygame.KEYDOWN:
+                                    if event.key == pygame.K_ESCAPE:
+                                        continuer = 0
+                                elif event.type == QUIT:
+                                    continuer = 0
+                                elif event.type == MOUSEBUTTONUP:
+                                    self.current_mass_value = self.mass_scale.value
+                                    self.current_charge_value = self.charge_scale.value
+                                    self.current_dipole_moment = self.dipole_moment_scale.value
+                                    self.current_polarizability = self.polarizability_scale.value
+
+                                    # if self.mass_scale.value != self.current_mass_value:
+                                    #     print (self.mass_scale.value)
+
+                            self.screen.fill(self.bgColor)
+
+                            for el in self.env.agentList:
+                                self.draw_point(el.position, pxarray)
+                            for el in self.env.objectList:
+                                self.draw_point(el.position, pxarray)
+
+                            del pxarray
+
+                            sgc.update(time)
+                            pygame.display.flip()
+
+                            if self.nb_sequences > 0:
+                                self.nb_sequences -= 1
+
+                        #self.show_temperature()
 
     def run(self):
-        continuer = 1
 
-        while continuer:
-            time = self.clock.tick()
-            # probably better not to update values on each step
-            # it will have to do for now !
+        restart = True
+        while restart:
+            continuer = 1
+            restart = False
 
-            if self.sim_running:
-                self.env.actualize(mass=self.current_mass_value,
-                                   charge=self.current_charge_value,
-                                   polarizability=self.current_polarizability,
-                                   dipole_moment=self.current_dipole_moment)
+            self.init_env()
 
-            pxarray = pygame.PixelArray(self.screen.image)
+            while continuer and (self.nb_sequences != 0):
+                time = self.clock.tick()
+                # probably better not to update values on each step
+                # it will have to do for now !
 
-            for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
-                sgc.event(event)
-                if event.type == GUI:
-                    print(event)
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                if self.sim_running:
+                    self.env.actualize(mass=self.current_mass_value,
+                                       charge=self.current_charge_value,
+                                       polarizability=self.current_polarizability,
+                                       dipole_moment=self.current_dipole_moment)
+
+                pxarray = pygame.PixelArray(self.screen.image)
+
+                for event in pygame.event.get():  # On parcours la liste de tous les événements reçus
+                    sgc.event(event)
+                    if event.type == GUI:
+                        print(event)
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            continuer = 0
+                        if event.key == pygame.K_r:
+                            continuer = 0
+                            restart = True
+                    elif event.type == QUIT:
                         continuer = 0
-                elif event.type == QUIT:
-                    continuer = 0
-                elif event.type == MOUSEBUTTONUP:
-                    self.current_mass_value = self.mass_scale.value
-                    self.current_charge_value = self.charge_scale.value
-                    self.current_dipole_moment = self.dipole_moment_scale.value
-                    self.current_polarizability = self.polarizability_scale.value
+                    elif event.type == MOUSEBUTTONUP:
+                        self.current_mass_value = self.mass_scale.value
+                        self.current_charge_value = self.charge_scale.value
+                        self.current_dipole_moment = self.dipole_moment_scale.value
+                        self.current_polarizability = self.polarizability_scale.value
 
-                    # if self.mass_scale.value != self.current_mass_value:
-                    #     print (self.mass_scale.value)
+                        # if self.mass_scale.value != self.current_mass_value:
+                        #     print (self.mass_scale.value)
 
-            self.screen.fill(self.bgColor)
+                self.screen.fill(self.bgColor)
 
-            for el in self.env.agentList:
-                self.draw_point(el.position, pxarray)
-            for el in self.env.objectList:
-                self.draw_point(el.position, pxarray)
+                for el in self.env.agentList:
+                    self.draw_point(el.position, pxarray)
+                for el in self.env.objectList:
+                    self.draw_point(el.position, pxarray)
 
-            del pxarray
+                del pxarray
 
-            sgc.update(time)
-            pygame.display.flip()
+                sgc.update(time)
+                pygame.display.flip()
 
-        self.show_temperature()
+                if self.nb_sequences > 0:
+                    self.nb_sequences -= 1
+
+            self.show_temperature()
 
     def change_sim_state(self):
         self.sim_running = not self.sim_running

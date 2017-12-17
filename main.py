@@ -5,13 +5,11 @@ import _thread
 import sgc
 from GUI.Gui import *
 
-
-
 a = Gui()
 
-continuer = True
+a.run_sequence()
+# a.run()
 
-a.run()
 del a
 
 
