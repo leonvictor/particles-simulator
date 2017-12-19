@@ -12,8 +12,8 @@ from Environement.environment import Environment
 
 class Gui:
 
-    NB_AGENTS = 60
-    NB_OCCURRENCES = 30
+    NB_AGENTS = 50
+    NB_OCCURRENCES = 5
 
     def init_env(self):
         if self.env is not None:
@@ -99,16 +99,20 @@ class Gui:
         self.clock = pygame.time.Clock()
 
     def run_params(self, mass, charge, polarizability, dipole_moment, nb_sequences):
+        """Run the session with the indicated parameters, if no data exists for entropy, create some"""
 
-        data = Environment.get_probability_grid_config(mass,charge,polarizability,dipole_moment, nb_sequences)
+        data = Environment.get_probability_grid_config(mass, charge, polarizability, dipole_moment, nb_sequences)
 
         if data is None:
             self.run_sequence(mass, charge, polarizability, dipole_moment, nb_sequences)
-            data = Environment.get_probability_grid_config(mass, charge, polarizability, dipole_moment, nb_sequences)
 
         self.nb_sequences = nb_sequences
         params = (mass, charge, polarizability, dipole_moment)
-        self.run(data, params)
+
+        (self.mass_scale.value, self.charge_scale.value, self.dipole_moment_scale.value,
+         self.polarizability_scale.value) = params
+
+        self.run(params)
 
     def run_sequence(self, mass, charge, polarizability, dipole_moment, nb_sequences):
         ranges_list = (range(mass, mass+1), range(charge, charge+1), range(polarizability, polarizability+1),
@@ -142,9 +146,9 @@ class Gui:
         self.nb_sequences = -1
 
 
-    def run(self, data = None, params = None):
+    def run(self, params = None):
+
         restart = True
-        self.sim_running = data is not None
         if params is not None:
             (self.current_mass_value, self.current_charge_value,
              self.current_polarizability, self.current_dipole_moment) = params
@@ -161,14 +165,13 @@ class Gui:
                     self.env.actualize(mass=self.current_mass_value,
                                        charge=self.current_charge_value,
                                        polarizability=self.current_polarizability,
-                                       dipole_moment=self.current_dipole_moment,
-                                       data= data)
-                continuer, restart = self.pygame_event_managing(data is None)
+                                       dipole_moment=self.current_dipole_moment)
+                    if self.nb_sequences > 0:
+                        self.nb_sequences -= 1
+
+                continuer, restart = self.pygame_event_managing(params is None)
                 self.pygame_display_managing()
 
-
-                if self.nb_sequences > 0:
-                    self.nb_sequences -= 1
             self.show_temperature()
             self.show_entropy()
 

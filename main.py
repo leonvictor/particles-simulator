@@ -7,8 +7,8 @@ from GUI.Gui import *
 
 a = Gui()
 
-a.run_params(70,4,1,1, 100)
-# a.run()
+a.run_params(100, 1, 1, 1, 60)
+#a.run()
 
 del a
 

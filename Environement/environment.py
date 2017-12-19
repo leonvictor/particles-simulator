@@ -15,7 +15,7 @@ class Environment:
         self.agentList = []
         self.objectList = []
         self.treeDepth = 0
-        self.envGrid = EnvGrid(30)
+        self.envGrid = EnvGrid(100)
         self.influenceList = []
         """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
         self.relative_permittivity = 1.0006
@@ -27,10 +27,7 @@ class Environment:
         self.gasConstant = 8.3144598
         self.sequence = 0
 
-    def actualize(self, mass, charge, polarizability, dipole_moment, data = None):
-
-        if data is not None:
-            self.compute_entropy(data[self.sequence])
+    def actualize(self, mass, charge, polarizability, dipole_moment):
 
         for agent in self.agentList:
             # send updated values to each agent
@@ -38,7 +35,6 @@ class Environment:
                                 charge=charge,
                                 dipole_moment=dipole_moment,
                                 polarizability=polarizability)
-
             agent.act()
 
         length = len(self.influenceList)
@@ -52,8 +48,10 @@ class Environment:
 
         self.dataStore.temperatureList[self.sequence] = avrSpeed / (3 * self.gasConstant)
 
-        self.envGrid.save(str(mass) + "_" + str(charge) + "_" + str(polarizability) +
-                          "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
+        name = (str(mass) + "_" + str(charge) + "_" + str(polarizability) +
+                "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
+        self.envGrid.save(name)
+        self.compute_entropy(name)
         self.sequence += 1
 
 
@@ -128,21 +126,22 @@ class Environment:
         """Récupère le dictionnaire grille/probabilité pour toutes les séquences d'une configuration de paramètres"""
         result = {}
         for i in range(0,max_sequence):
-            result[i] = Environment.get_probability_grid_name_sequence(name, i)
+            name_seq = name + str(i) + "_"
+            result[i] = Environment.get_probability_grid_name_sequence(name_seq)
         return result
 
     @staticmethod
-    def get_probability_grid_name_sequence(name, sequence_nb):
+    def get_probability_grid_name_sequence(name):
         """Récupère le dicitionnaire grille/probabilité dans tous les fichiers correspondants"""
         result = {}
-        name += str(sequence_nb) + "_"
+
 
         files = []
 
         os.makedirs(EnvGrid.path, exist_ok=True)
 
         for f in os.listdir(EnvGrid.path):
-            if(f.startswith(name)):
+            if f.startswith(name):
                 files.append(f)
 
         for filename in files:
@@ -154,7 +153,7 @@ class Environment:
             for k, v in file.items() :
                 if k in result.keys():
                     result[k] += v/nb_agent
-                else :
+                else:
                     result[k] = v/nb_agent
 
         for key in result.keys():
@@ -179,13 +178,13 @@ class Environment:
 
         return result
 
-    def compute_entropy(self, data):
+    def compute_entropy(self, name):
         entropy = 0
-        for square in self.envGrid.grid:
-            pi = min(data.values())
-            if square in data.keys():
-                pi = data[square]
-            entropy += pi * log(pi)
-        entropy = - entropy
+        data = Environment.get_probability_grid_name_sequence(name)
+
+        for pi in data.values():
+            entropy += pi*log(pi)
+        entropy = - entropy/log(len(data))
+
         self.dataStore.entropyList[self.sequence] = entropy
 
