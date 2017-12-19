@@ -3,4 +3,5 @@ class DataStore :
 
     def __init__(self):
 
-        self.speedList = {}
+        self.temperatureList = {}
+        self.entropyList = {}

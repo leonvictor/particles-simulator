@@ -12,10 +12,8 @@ class Agent(EnvObj):
         EnvObj.__init__(self, environment)
         """Temporary initialization for testing purpose"""
 
-        self.cumulativeForcesBehavior = CumulativeForcesBehavior()
         self.behavior = behavior
         self.initBehavior(behavior)
-        self.initBehavior(self.cumulativeForcesBehavior)
         self.speed = np.zeros(self.environment.dimension)
         self.acceleration = np.zeros(self.environment.dimension)
 
@@ -36,17 +34,14 @@ class Agent(EnvObj):
             if not perceptions or len(perceptions) <= 1:
                 influence = self.behavior.act(self.position, perceptions)
             else:
-                #influence = self.behavior.act(self.position, perceptions)
-                influence = self.cumulativeForcesBehavior.act(self.position, perceptions)
+                influence = self.behavior.act(self.position, perceptions)
             influence.agent = self
             self.environment.addInfluence(influence)
 
     def moved(self):
         """"Update speed and deltaTime"""
-
         self.speed = (self.position - self.lastPosition)
-
-        self.speed = self.speed / self.environment.deltaTime
+        self.speed /= self.environment.deltaTime
         self.lastPosition = self.position
         #print("agent moved to {0}".format(self.position))
 

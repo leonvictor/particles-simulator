@@ -1,5 +1,5 @@
 */__pycache__/*
-
+*.csv
 *.ini
 __pycache__/
 .idea/

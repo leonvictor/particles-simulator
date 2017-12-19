@@ -1,8 +1,12 @@
 import csv
 import os
 from pathlib import Path
+from ast import literal_eval as make_tuple
 
 class EnvGrid:
+
+    path = os.getcwd() + "\\csv\\stat_data\\"
+    extension = ".csv"
 
     def __init__(self, side):
         self.side = side
@@ -92,23 +96,39 @@ class EnvGrid:
             b = [a[0], len(a[1])]
             data.append(b)
 
-        path = os.getcwd() + "\\csv"
+        os.makedirs(self.path, exist_ok=True)
 
-        os.makedirs(path, exist_ok=True)
-
-        path += "\\" + name
-        extension = ".csv"
         cmpt = 0
-        while Path(path + str(cmpt) + extension).is_file():
+        while Path(EnvGrid.path + name + str(cmpt) + EnvGrid.extension).is_file():
             cmpt += 1
 
-        self.WriteListToCSV(path + str(cmpt) + extension, fieldnames, data)
+        EnvGrid.WriteListToCSV(self.path + name + str(cmpt) + self.extension, fieldnames, data)
+
+    def load(name):
+        datalist = EnvGrid.ReadCSVasList( EnvGrid.path + name)
+
+        result = {}
+
+        for item in datalist:
+            if len(item) != 2:
+                continue
+
+            result[make_tuple(item[0])] = item[1]
+
+        return result
 
 
-    def WriteListToCSV(self, csv_file, csv_columns, data_list):
+    def WriteListToCSV(csv_file, csv_columns, data_list):
 
         with open(csv_file, 'w') as csvfile:
             writer = csv.writer(csvfile, dialect='excel', quoting=csv.QUOTE_NONNUMERIC)
             writer.writerow(csv_columns)
             for data in data_list:
                 writer.writerow(data)
+
+    def ReadCSVasList(csv_file):
+        with open(csv_file) as csvfile:
+            reader = csv.reader(csvfile, dialect='excel', quoting=csv.QUOTE_NONNUMERIC)
+            datalist = list(reader)
+            return datalist
+        return None
