@@ -9,6 +9,9 @@ class Environment:
     """Environment du MAS"""
 
     DIMENSION = 2
+    # BOX_SIZE serait sans doute suffisant
+    BOX_WIDTH = 800
+    BOX_HEIGHT = 800
 
     def __init__(self):
         self.dimension = Environment.DIMENSION
@@ -28,7 +31,7 @@ class Environment:
         self.sequence = 0
 
     def actualize(self, mass, charge, polarizability, dipole_moment):
-
+        print(len(self.agentList))
         for agent in self.agentList:
             # send updated values to each agent
             agent.update_values(mass=mass,
@@ -41,7 +44,7 @@ class Environment:
         avrSpeed = np.zeros(self.dimension)
         for i in range(length):
             influence = self.influenceList.pop()
-            influence = self.checkInfluence(influence)
+            influence = self.filterInfluence(influence)
             self.apply(influence)
             avrSpeed += np.linalg.norm(influence.agent.speed)*influence.agent.molar_mass
         avrSpeed /= length
@@ -78,9 +81,11 @@ class Environment:
     def addInfluence(self, influence):
         self.influenceList.append(influence)
 
-    def checkInfluence(self, influence):
-        # TODO
-
+    def filterInfluence(self, influence):
+        # clamp inflence so that particles remain in the environment
+        # influence.position = np.clip(influence.position, -Environment.BOX_WIDTH/2, Environment.BOX_WIDTH/2)
+        influence.position[0] = max(min(Environment.BOX_WIDTH/2, influence.position[0]), -Environment.BOX_WIDTH/2)
+        influence.position[1] = max(min(Environment.BOX_HEIGHT/2, influence.position[1]), -Environment.BOX_HEIGHT/2)
         return influence
 
     def apply(self, influence):

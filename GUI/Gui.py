@@ -12,7 +12,7 @@ from Environement.environment import Environment
 
 class Gui:
 
-    NB_AGENTS = 50
+    NB_AGENTS = 120
     NB_OCCURRENCES = 5
 
     def init_env(self):
@@ -38,11 +38,14 @@ class Gui:
 
         pygame.init()
         self.info = pygame.display.Info()
-        self.dw = int(self.info.current_w/2)
-        self.dh = int(self.info.current_h/2)
+        self.dw = int(self.info.current_w/3)
+        self.dh = int(self.info.current_h/3)
         self.screen = sgc.surface.Screen((2 * self.dw, 2 * self.dh))
         self.fgColor = (0, 0, 0)
         self.bgColor = (255, 255, 255)
+
+        #Ca marche pas :'(
+        #pygame.draw.rect(self.screen.image, self.fgColor, (200, 100, Environment.BOX_WIDTH, Environment.BOX_HEIGHT), 0)
 
         btn = sgc.Button(label="Run/Pause",
                          pos=(10,self.info.current_h/3 - 20)
