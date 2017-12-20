@@ -7,24 +7,22 @@ from random import uniform
 import matplotlib.pyplot as plt
 from sgc.widgets._locals import GUI
 
+import Parameters as param
 from Environement.environment import Environment
 
 
 class Gui:
 
-    NB_AGENTS = 120
-    NB_OCCURRENCES = 5
-
     def init_env(self):
         if self.env is not None:
             del self.env
         self.env = Environment()
-        for i in range(Gui.NB_AGENTS):
+        for i in range(param.NB_AGENTS):
             self.env.addAgent()
 
     def __init__(self):
 
-        #initialisation dans le run
+        # initialisation dans le run
         self.env = None
 
         # Initialize sliders (and actual starting values) here
@@ -35,20 +33,18 @@ class Gui:
         self.sim_running = False
         self.nb_sequences = -1
 
-
         pygame.init()
+        pygame.display.init()
+
         self.info = pygame.display.Info()
-        self.dw = int(self.info.current_w/3)
-        self.dh = int(self.info.current_h/3)
+        self.dw = int(self.info.current_w / 3)
+        self.dh = int(self.info.current_h / 3)
         self.screen = sgc.surface.Screen((2 * self.dw, 2 * self.dh))
         self.fgColor = (0, 0, 0)
         self.bgColor = (255, 255, 255)
 
-        #Ca marche pas :'(
-        #pygame.draw.rect(self.screen.image, self.fgColor, (200, 100, Environment.BOX_WIDTH, Environment.BOX_HEIGHT), 0)
-
         btn = sgc.Button(label="Run/Pause",
-                         pos=(10,self.info.current_h/3 - 20)
+                         pos=(10, self.info.current_h / 3 - 20)
                          )
 
         btn.on_click = self.change_sim_state
@@ -118,8 +114,8 @@ class Gui:
         self.run(params)
 
     def run_sequence(self, mass, charge, polarizability, dipole_moment, nb_sequences):
-        ranges_list = (range(mass, mass+1), range(charge, charge+1), range(polarizability, polarizability+1),
-                       range(dipole_moment, dipole_moment+1))
+        ranges_list = (range(mass, mass + 1), range(charge, charge + 1), range(polarizability, polarizability + 1),
+                       range(dipole_moment, dipole_moment + 1))
         self.run_sequence_ranges(ranges_list, nb_sequences)
 
     def run_sequence_ranges(self, params_ranges_list, nb_sequences):
@@ -133,7 +129,7 @@ class Gui:
             continuer = 1
 
             (mass, charge, polarizability, dipole_moment) = configuration
-            for i in range(0, Gui.NB_OCCURRENCES):
+            for i in range(0, param.NB_OCCURRENCES):
                 if not continuer:
                     break
 
@@ -148,8 +144,7 @@ class Gui:
                         self.nb_sequences -= 1
         self.nb_sequences = -1
 
-
-    def run(self, params = None):
+    def run(self, params=None):
 
         restart = True
         if params is not None:
@@ -188,6 +183,10 @@ class Gui:
             self.draw_point(el.position, pxarray)
         del pxarray
         sgc.update(time)
+        pygame.draw.rect(self.screen.image, self.fgColor, (self.dw-param.BOX_SIZE/2,
+                                                           self.dh-param.BOX_SIZE/2,
+                                                           param.BOX_SIZE,
+                                                           param.BOX_SIZE), 1)
         pygame.display.flip()
 
     def pygame_event_managing(self, param_change_allowed):
@@ -220,7 +219,7 @@ class Gui:
 
         plt.plot(list(temp.keys()), temp.values())
         plt.title("Temperature evolution")
-        plt.xlabel("time (" + str(self.env.deltaTime) +" s)")
+        plt.xlabel("time (" + str(self.env.deltaTime) + " s)")
         plt.ylabel("temperature")
         plt.show()
 
@@ -230,7 +229,7 @@ class Gui:
         if len(entropy) != 0:
             plt.plot(list(entropy.keys()), entropy.values())
             plt.title("Entropy evolution")
-            plt.xlabel("time (" + str(self.env.deltaTime) +" s)")
+            plt.xlabel("time (" + str(self.env.deltaTime) + " s)")
             plt.ylabel("entropy")
             plt.show()
 

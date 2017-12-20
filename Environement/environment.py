@@ -1,17 +1,17 @@
 from Environement.dataStore import *
 from MAS.Behavior.cumulativeForcesBehavior import *
 from MAS.agent import *
-from Environement.envGrid import  *
-from math import  ceil
+from Environement.envGrid import *
+from math import ceil
 from math import log
+
 
 class Environment:
     """Environment du MAS"""
 
     DIMENSION = 2
     # BOX_SIZE serait sans doute suffisant
-    BOX_WIDTH = 800
-    BOX_HEIGHT = 800
+    BOX_SIZE = 600
 
     def __init__(self):
         self.dimension = Environment.DIMENSION
@@ -46,7 +46,7 @@ class Environment:
             influence = self.influenceList.pop()
             influence = self.filterInfluence(influence)
             self.apply(influence)
-            avrSpeed += np.linalg.norm(influence.agent.speed)*influence.agent.molar_mass
+            avrSpeed += np.linalg.norm(influence.agent.speed) * influence.agent.molar_mass
         avrSpeed /= length
 
         self.dataStore.temperatureList[self.sequence] = avrSpeed / (3 * self.gasConstant)
@@ -57,23 +57,20 @@ class Environment:
         self.compute_entropy(name)
         self.sequence += 1
 
-
     def getPerception(self, frustum):
 
         agentPerception = []
 
         agentListToCheck = []
-        maxRank = ceil(frustum.radius/self.envGrid.side)
+        maxRank = ceil(frustum.radius / self.envGrid.side)
 
         agentListToCheck = self.envGrid.getListFromRank(frustum.agent.gridPos, maxRank)
-
 
         return agentListToCheck
 
         for obj in agentListToCheck:
 
             if frustum.is_in_frustum(obj) and frustum.agent != obj:
-
                 agentPerception.append(obj)
 
         return agentPerception
@@ -83,9 +80,9 @@ class Environment:
 
     def filterInfluence(self, influence):
         # clamp inflence so that particles remain in the environment
-        # influence.position = np.clip(influence.position, -Environment.BOX_WIDTH/2, Environment.BOX_WIDTH/2)
-        influence.position[0] = max(min(Environment.BOX_WIDTH/2, influence.position[0]), -Environment.BOX_WIDTH/2)
-        influence.position[1] = max(min(Environment.BOX_HEIGHT/2, influence.position[1]), -Environment.BOX_HEIGHT/2)
+        influence.position = np.clip(influence.position, -Environment.BOX_SIZE/2, Environment.BOX_SIZE/2)
+        # influence.position[0] = max(min(Environment.BOX_SIZE / 2, influence.position[0]), -Environment.BOX_SIZE / 2)
+        # influence.position[1] = max(min(Environment.BOX_SIZE / 2, influence.position[1]), -Environment.BOX_SIZE / 2)
         return influence
 
     def apply(self, influence):
@@ -102,8 +99,8 @@ class Environment:
         """Récupère les dictionnaires grille/nb_agent_moyen pour toutes les configurations possibles,
         l'input doit impératvement être des ranges et dans l'ordre de l'utilisation dans le nommage des fichiers"""
 
-        #on construit une liste avec toutes les configurations possibles déterminées à partir des ranges en input
-        #chaque configuration contient les valeurs de paramètres
+        # on construit une liste avec toutes les configurations possibles déterminées à partir des ranges en input
+        # chaque configuration contient les valeurs de paramètres
         configurations = Environment.build_list(ranges_list_input)
         result = {}
         for configuration in configurations:
@@ -121,7 +118,7 @@ class Environment:
             name += str(i) + "_"
         result = Environment.get_probability_grid_name(name, max_sequence)
 
-        if len(result[max_sequence-1]) == 0:
+        if len(result[max_sequence - 1]) == 0:
             return None
 
         return result
@@ -130,7 +127,7 @@ class Environment:
     def get_probability_grid_name(name, max_sequence):
         """Récupère le dictionnaire grille/probabilité pour toutes les séquences d'une configuration de paramètres"""
         result = {}
-        for i in range(0,max_sequence):
+        for i in range(0, max_sequence):
             name_seq = name + str(i) + "_"
             result[i] = Environment.get_probability_grid_name_sequence(name_seq)
         return result
@@ -139,7 +136,6 @@ class Environment:
     def get_probability_grid_name_sequence(name):
         """Récupère le dicitionnaire grille/probabilité dans tous les fichiers correspondants"""
         result = {}
-
 
         files = []
 
@@ -155,11 +151,11 @@ class Environment:
             for v in file.values():
                 nb_agent += v
 
-            for k, v in file.items() :
+            for k, v in file.items():
                 if k in result.keys():
-                    result[k] += v/nb_agent
+                    result[k] += v / nb_agent
                 else:
-                    result[k] = v/nb_agent
+                    result[k] = v / nb_agent
 
         for key in result.keys():
             result[key] /= len(files)
@@ -170,14 +166,14 @@ class Environment:
         return Environment._build_list(range_array, np.zeros(len(range_array)), 0)
 
     @staticmethod
-    def _build_list(range_array,array_in, index):
+    def _build_list(range_array, array_in, index):
         result = []
 
         for i in range_array[index]:
             tab = list(array_in)
             tab[index] = i
-            if index+1 < len(range_array):
-                result.extend(Environment._build_list(range_array, tab, index+1))
+            if index + 1 < len(range_array):
+                result.extend(Environment._build_list(range_array, tab, index + 1))
             else:
                 result.append(tuple(tab))
 
@@ -188,8 +184,7 @@ class Environment:
         data = Environment.get_probability_grid_name_sequence(name)
 
         for pi in data.values():
-            entropy += pi*log(pi)
-        entropy = - entropy/log(len(data))
+            entropy += pi * log(pi)
+        entropy = - entropy / log(len(data))
 
         self.dataStore.entropyList[self.sequence] = entropy
-
