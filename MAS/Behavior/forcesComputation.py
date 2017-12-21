@@ -69,6 +69,7 @@ class ForcesComputation :
                 coulomb = coulomb * 10e-6
                 unit_vector = (-p.position + agent.position) / norm
                 interactions.append(coulomb * unit_vector)
-
+            else:
+                print("norm is 0 !")
 
         return np.sum(interactions, axis=0)

@@ -4,13 +4,14 @@ from MAS.agent import *
 from Environement.envGrid import *
 from math import ceil
 from math import log
+import numpy as np
+import Parameters as param
 
 
 class Environment:
     """Environment du MAS"""
 
     DIMENSION = 2
-    # BOX_SIZE serait sans doute suffisant
     BOX_SIZE = 600
 
     def __init__(self):
@@ -79,8 +80,23 @@ class Environment:
         self.influenceList.append(influence)
 
     def filterInfluence(self, influence):
-        # clamp inflence so that particles remain in the environment
-        influence.position = np.clip(influence.position, -Environment.BOX_SIZE/2, Environment.BOX_SIZE/2)
+        # for i in self.influenceList:
+
+        if param.BORDER_MODE is param.BorderMode.DONUT:
+            for i in range(0, 2):
+                if influence.position[i] > Environment.BOX_SIZE/2:
+                    influence.position[i] = -Environment.BOX_SIZE/2 + influence.position[i] % (Environment.BOX_SIZE / 2)
+                elif influence.position[i] < -Environment.BOX_SIZE/2:
+                    influence.position[i] = Environment.BOX_SIZE/2 + influence.position[i] % (-Environment.BOX_SIZE / 2)
+
+        elif param.BORDER_MODE is param.BorderMode.SOLID:
+            # clamp influence so that particles remain in the environment
+            # we use a random wiggle room to avoid overlapping particles
+            rnd = np.random.uniform(0.000, 0.005)
+            influence.position = np.clip(influence.position,
+                                         -Environment.BOX_SIZE / 2 + rnd,
+                                         Environment.BOX_SIZE / 2 - rnd)
+
         # influence.position[0] = max(min(Environment.BOX_SIZE / 2, influence.position[0]), -Environment.BOX_SIZE / 2)
         # influence.position[1] = max(min(Environment.BOX_SIZE / 2, influence.position[1]), -Environment.BOX_SIZE / 2)
         return influence

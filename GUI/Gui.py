@@ -177,6 +177,7 @@ class Gui:
         time = self.clock.tick()
         self.screen.fill(self.bgColor)
         pxarray = pygame.PixelArray(self.screen.image)
+        print(len(self.env.agentList))
         for el in self.env.agentList:
             self.draw_point(el.position, pxarray)
         for el in self.env.objectList:
