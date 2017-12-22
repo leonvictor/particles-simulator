@@ -4,6 +4,14 @@ import scipy.constants as const
 
 class ForcesComputation :
 
+    k = 1 / 4 * scipy.constants.pi * scipy.constants.epsilon_0
+    stiffness = 1
+    spring_length = 10
+    coulomb_factor = 10e-7
+    waals_factor = 10e-50
+    gravity_factor = 10e2
+    spring_factor = 10e8
+
     @staticmethod
     def gravity(agent, perceptions):
         interactions = []
@@ -16,7 +24,7 @@ class ForcesComputation :
             # if p.position.all != agent.position.all:
             if norm != 0:
                 gravity = scipy.constants.G * ((agent.mass * p.mass)
-                                               / (np.linalg.norm(agent.position - p.position)) ** 2)
+                                               / (norm ** 2))
 
                 gravity = gravity * 10e2
                 unit_vector = (-agent.position+p.position)/norm
@@ -45,15 +53,15 @@ class ForcesComputation :
                 e_london = (3/4)*(
                                const.Planck * electronic_absorption_frequency * agent.polarizability * p.polarizability) / ((
                                4 * const.pi * const.epsilon_0)**2)
-                vdw = (- 1/(np.linalg.norm(agent.position - p.position)**6)) \
+                vdw = (- 1/(norm**6)) \
                       * (e_keesom + e_debye + e_london)
-                vdw = vdw * 10e-12
+                vdw = vdw * ForcesComputation.waals_factor
                 unit_vector = (agent.position - p.position) / norm
                 interactions.append(vdw * unit_vector)
         return np.sum(interactions,axis=0)
 
     @staticmethod
-    def coulomb(agent, perception, k):
+    def coulomb(agent, perception):
         interactions = []
         """It's ok to perceive yourself, but not to be attracted by yourself"""
         if agent in perception:
@@ -63,13 +71,32 @@ class ForcesComputation :
             """this is necessary for not but shouldn't happen anyway"""
             # if p.position.all != agent.position.all:
             if norm != 0:
-                coulomb = k * np.absolute(agent.charge * p.charge) /\
-                          (np.linalg.norm(p.position - agent.position) ** 2)
+                coulomb = ForcesComputation.k * np.absolute(agent.charge * p.charge) /\
+                          (norm ** 2)
                 #repulsive force : the vector is away from p
-                coulomb = coulomb * 10e-6
+                coulomb *= ForcesComputation.coulomb_factor
                 unit_vector = (-p.position + agent.position) / norm
                 interactions.append(coulomb * unit_vector)
             else:
                 print("norm is 0 !")
+
+        return np.sum(interactions, axis=0)
+
+    @staticmethod
+    def spring(agent, perceptions):
+        interactions = []
+        """It's ok to perceive yourself, but not to be attracted by yourself"""
+        if agent in perceptions:
+            perceptions.remove(agent)
+        for p in perceptions:
+            norm = np.linalg.norm(agent.position - p.position)
+            """this is necessary for not but shouldn't happen anyway"""
+            # if p.position.all != agent.position.all:
+            if norm != 0:
+                spring = - ForcesComputation.k * (norm - ForcesComputation.spring_length)
+
+                spring *= ForcesComputation.spring_factor
+                unit_vector = (-agent.position+p.position)/norm
+                interactions.append(spring * unit_vector)
 
         return np.sum(interactions, axis=0)

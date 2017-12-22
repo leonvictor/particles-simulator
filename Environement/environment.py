@@ -32,7 +32,7 @@ class Environment:
         self.sequence = 0
 
     def actualize(self, mass, charge, polarizability, dipole_moment):
-        print(len(self.agentList))
+
         for agent in self.agentList:
             # send updated values to each agent
             agent.update_values(mass=mass,
@@ -83,16 +83,24 @@ class Environment:
         # for i in self.influenceList:
 
         if param.BORDER_MODE is param.BorderMode.DONUT:
-            for i in range(0, 2):
+            out_of_boarder = False
+            position_saved = np.array(influence.position)
+            for i in range(0, Environment.DIMENSION):
                 if influence.position[i] > Environment.BOX_SIZE/2:
+                    out_of_boarder = True
                     influence.position[i] = -Environment.BOX_SIZE/2 + influence.position[i] % (Environment.BOX_SIZE / 2)
                 elif influence.position[i] < -Environment.BOX_SIZE/2:
+                    out_of_boarder = True
                     influence.position[i] = Environment.BOX_SIZE/2 + influence.position[i] % (-Environment.BOX_SIZE / 2)
+            if(out_of_boarder):
+                influence.agent.expectedPosition = position_saved
+            else:
+                influence.agent.expectedPosition = None
 
         elif param.BORDER_MODE is param.BorderMode.SOLID:
             # clamp influence so that particles remain in the environment
             # we use a random wiggle room to avoid overlapping particles
-            rnd = np.random.uniform(0.000, 0.005)
+            rnd = np.random.uniform(0.0001, 0.005)
             influence.position = np.clip(influence.position,
                                          -Environment.BOX_SIZE / 2 + rnd,
                                          Environment.BOX_SIZE / 2 - rnd)

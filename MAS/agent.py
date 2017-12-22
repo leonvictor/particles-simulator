@@ -18,6 +18,7 @@ class Agent(EnvObj):
         self.acceleration = np.zeros(self.environment.dimension)
 
         self.lastPosition = self.position
+        self.expectedPosition = None
 
         self.frustum = frustum
         self.frustum.agent = self
@@ -40,7 +41,9 @@ class Agent(EnvObj):
 
     def moved(self):
         """"Update speed and deltaTime"""
-        self.speed = (self.position - self.lastPosition)
+        if self.expectedPosition is None:
+            self.expectedPosition = self.position
+        self.speed = (self.expectedPosition - self.lastPosition)
         self.speed /= self.environment.deltaTime
         self.lastPosition = self.position
         #print("agent moved to {0}".format(self.position))

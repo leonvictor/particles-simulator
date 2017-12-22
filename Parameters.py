@@ -10,7 +10,7 @@ class BorderMode(Enum):
 
 # Simulation parameters
 NB_OCCURRENCES = 5
-NB_AGENTS = 120
+NB_AGENTS = 10
 BOX_SIZE = 600
 
 BORDER_MODE = BorderMode.DONUT

@@ -177,14 +177,15 @@ class Gui:
         time = self.clock.tick()
         self.screen.fill(self.bgColor)
         pxarray = pygame.PixelArray(self.screen.image)
-        print(len(self.env.agentList))
         for el in self.env.agentList:
             self.draw_point(el.position, pxarray)
         for el in self.env.objectList:
             self.draw_point(el.position, pxarray)
         del pxarray
         sgc.update(time)
-        pygame.draw.rect(self.screen.image, self.fgColor, (self.dw-param.BOX_SIZE/2,
+
+        if(param.BORDER_MODE != param.BorderMode.NONE):
+            pygame.draw.rect(self.screen.image, self.fgColor, (self.dw-param.BOX_SIZE/2,
                                                            self.dh-param.BOX_SIZE/2,
                                                            param.BOX_SIZE,
                                                            param.BOX_SIZE), 1)
