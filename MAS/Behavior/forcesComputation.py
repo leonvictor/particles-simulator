@@ -6,7 +6,7 @@ class ForcesComputation :
 
     k = 1 / 4 * scipy.constants.pi * scipy.constants.epsilon_0
     stiffness = 1
-    spring_length = 10
+    spring_length = 50
     coulomb_factor = 10e-7
     waals_factor = 10e-50
     gravity_factor = 10e2
@@ -96,7 +96,7 @@ class ForcesComputation :
                 spring = - ForcesComputation.k * (norm - ForcesComputation.spring_length)
 
                 spring *= ForcesComputation.spring_factor
-                unit_vector = (-agent.position+p.position)/norm
+                unit_vector = (agent.position-p.position)/norm
                 interactions.append(spring * unit_vector)
 
         return np.sum(interactions, axis=0)
