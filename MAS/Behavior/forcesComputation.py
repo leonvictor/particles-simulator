@@ -5,12 +5,11 @@ import scipy.constants as const
 class ForcesComputation :
 
     k = 1 / 4 * scipy.constants.pi * scipy.constants.epsilon_0
-    stiffness = 1
     spring_length = 50
-    coulomb_factor = 10e-7
-    waals_factor = 10e-50
-    gravity_factor = 10e2
-    spring_factor = 10e8
+    coulomb_factor = 5*10e2
+    waals_factor = 10e-33
+    gravity_factor = 5*10e1
+    spring_factor = 10e-4
 
     @staticmethod
     def gravity(agent, perceptions):
@@ -93,8 +92,7 @@ class ForcesComputation :
             """this is necessary for not but shouldn't happen anyway"""
             # if p.position.all != agent.position.all:
             if norm != 0:
-                spring = - ForcesComputation.k * (norm - ForcesComputation.spring_length)
-
+                spring = - agent.stiffness * (norm - ForcesComputation.spring_length)
                 spring *= ForcesComputation.spring_factor
                 unit_vector = (agent.position-p.position)/norm
                 interactions.append(spring * unit_vector)

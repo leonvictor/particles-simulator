@@ -20,6 +20,7 @@ class EnvObj:
         self.mass = 10
         self.charge = 300000
         self.molar_mass = const.Avogadro * self.mass
+        self.stiffness = 1
 
         """following values found on the net, for H2 molecules"""
         # use SI units

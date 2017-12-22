@@ -30,6 +30,7 @@ class Gui:
         self.current_charge_value = 1
         self.current_dipole_moment = 1
         self.current_polarizability = 1
+        self.current_stiffness = 1
         self.sim_running = False
         self.nb_sequences = -1
 
@@ -78,9 +79,9 @@ class Gui:
                                              label_col=self.fgColor,
                                              pos=(10, 160),
                                              min=1,
-                                             max=100000000,
-                                             min_step=100,
-                                             max_step=1000
+                                             max=100,
+                                             min_step=1,
+                                             max_step=99
                                              )
         self.dipole_moment_scale.add(2)
 
@@ -89,11 +90,22 @@ class Gui:
                                               label_col=self.fgColor,
                                               pos=(10, 230),
                                               min=1,
-                                              max=100000000,
-                                              min_step=100,
-                                              max_step=1000
+                                              max=100000,
+                                              min_step=1,
+                                              max_step=99999
                                               )
         self.polarizability_scale.add(3)
+
+        self.stiffness_scale = sgc.Scale(label="Stiffness",
+                                              label_side="top",
+                                              label_col=self.fgColor,
+                                              pos=(10, 300),
+                                              min=1,
+                                              max=100,
+                                              min_step=1,
+                                              max_step=99
+                                              )
+        self.stiffness_scale.add(3)
 
         self.clock = pygame.time.Clock()
 
@@ -113,9 +125,9 @@ class Gui:
 
         self.run(params)
 
-    def run_sequence(self, mass, charge, polarizability, dipole_moment, nb_sequences):
+    def run_sequence(self, mass, charge, polarizability, dipole_moment, stiffness, nb_sequences):
         ranges_list = (range(mass, mass + 1), range(charge, charge + 1), range(polarizability, polarizability + 1),
-                       range(dipole_moment, dipole_moment + 1))
+                       range(dipole_moment, dipole_moment + 1), range(stiffness, stiffness + 1))
         self.run_sequence_ranges(ranges_list, nb_sequences)
 
     def run_sequence_ranges(self, params_ranges_list, nb_sequences):
@@ -128,7 +140,7 @@ class Gui:
                 break
             continuer = 1
 
-            (mass, charge, polarizability, dipole_moment) = configuration
+            (mass, charge, polarizability, dipole_moment, stiffness) = configuration
             for i in range(0, param.NB_OCCURRENCES):
                 if not continuer:
                     break
@@ -139,7 +151,8 @@ class Gui:
                     self.env.actualize(mass=mass,
                                        charge=charge,
                                        polarizability=polarizability,
-                                       dipole_moment=dipole_moment)
+                                       dipole_moment=dipole_moment,
+                                       stiffness=stiffness)
                     if self.nb_sequences > 0:
                         self.nb_sequences -= 1
         self.nb_sequences = -1
@@ -149,7 +162,7 @@ class Gui:
         restart = True
         if params is not None:
             (self.current_mass_value, self.current_charge_value,
-             self.current_polarizability, self.current_dipole_moment) = params
+             self.current_polarizability, self.current_dipole_moment, self.current_stiffness) = params
 
         while restart:
             self.init_env()
@@ -163,7 +176,8 @@ class Gui:
                     self.env.actualize(mass=self.current_mass_value,
                                        charge=self.current_charge_value,
                                        polarizability=self.current_polarizability,
-                                       dipole_moment=self.current_dipole_moment)
+                                       dipole_moment=self.current_dipole_moment,
+                                       stiffness=self.current_stiffness)
                     if self.nb_sequences > 0:
                         self.nb_sequences -= 1
 
@@ -211,6 +225,7 @@ class Gui:
                 self.current_charge_value = self.charge_scale.value
                 self.current_dipole_moment = self.dipole_moment_scale.value
                 self.current_polarizability = self.polarizability_scale.value
+                self.current_stiffness = self.stiffness_scale.value
         return continuer, restart
 
     def change_sim_state(self):

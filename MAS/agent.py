@@ -82,15 +82,23 @@ class Agent(EnvObj):
     def _get_dipole_moment(self):
         return self._dipole_moment
 
-    def update_values(self, mass, charge,polarizability, dipole_moment):
+    def _get_stiffness(self):
+        return self._stiffness
+
+    def _set_stiffness(self, stiffness):
+        self._stiffness = stiffness
+
+    def update_values(self, mass, charge, polarizability, dipole_moment, stiffness):
         # print("my new mass is", mass)
         self.mass = mass
         self.charge = charge
         self.dipole_moment = dipole_moment
         self.polarizability = polarizability
+        self.stiffness = stiffness
 
     position = property(_get_position, _set_position)
     mass = property(_get_mass, _set_mass)
     charge = property(_get_charge, _set_charge)
     polarizability = property(_get_polarizability, _set_polarizability)
     dipole_moment = property(_get_dipole_moment, _set_dipole_moment)
+    stiffness = property(_get_stiffness, _set_stiffness)

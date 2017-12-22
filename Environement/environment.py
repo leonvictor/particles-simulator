@@ -31,14 +31,15 @@ class Environment:
         self.gasConstant = 8.3144598
         self.sequence = 0
 
-    def actualize(self, mass, charge, polarizability, dipole_moment):
+    def actualize(self, mass, charge, polarizability, dipole_moment, stiffness):
 
         for agent in self.agentList:
             # send updated values to each agent
             agent.update_values(mass=mass,
                                 charge=charge,
                                 dipole_moment=dipole_moment,
-                                polarizability=polarizability)
+                                polarizability=polarizability,
+                                stiffness=stiffness)
             agent.act()
 
         length = len(self.influenceList)
@@ -209,6 +210,6 @@ class Environment:
 
         for pi in data.values():
             entropy += pi * log(pi)
-        entropy = - entropy / log(len(data))
+        entropy = - entropy / log(len(data)+ 10e-10)
 
         self.dataStore.entropyList[self.sequence] = entropy
