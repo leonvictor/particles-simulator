@@ -43,7 +43,7 @@ class Environment:
             agent.act()
 
         length = len(self.influenceList)
-        avrSpeed = np.zeros(self.dimension)
+        avrSpeed = 0
         for i in range(length):
             influence = self.influenceList.pop()
             influence = self.filterInfluence(influence)

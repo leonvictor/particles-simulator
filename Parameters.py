@@ -12,7 +12,7 @@ class BorderMode(Enum):
 NB_OCCURRENCES = 5
 NB_AGENTS = 10
 BOX_SIZE = 600
-BORDER_MODE = BorderMode.NONE
+BORDER_MODE = BorderMode.DONUT
 
 # Forces
 GRAVITY = True

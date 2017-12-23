@@ -167,6 +167,7 @@ class Gui:
         while restart:
             self.init_env()
             continuer = 1
+            self.env.dataStore.clear()
             while continuer and (self.nb_sequences != 0):
 
                 # probably better not to update values on each step
@@ -184,10 +185,22 @@ class Gui:
                 continuer, restart = self.pygame_event_managing(params is None)
                 self.pygame_display_managing()
 
-            self.draw_ft("Temperature", self.env.dataStore.temperatureList)
-            self.draw_ft("Volume", self.env.dataStore.volume)
-            self.draw_ft("Pression", self.env.dataStore.pression)
-            self.draw_ft("Entropy", self.env.dataStore.entropyList)
+
+            plt.subplot(3,2, 1)
+            self.draw_dict("Temperature", self.env.dataStore.temperatureList)
+            plt.subplot(3, 2, 2)
+            self.draw_dict("Volume", self.env.dataStore.volume)
+            plt.subplot(3, 2, 3)
+            self.draw_dict("Pression", self.env.dataStore.pression)
+            plt.subplot(3, 2, 4)
+            self.draw_dict("Entropy", self.env.dataStore.entropyList)
+            plt.subplot(3, 2, 5)
+            self.draw_dict_f_dict(self.env.dataStore.temperatureList, self.env.dataStore.pression,
+                                  "temperature", "pression")
+            plt.subplot(3, 2, 6)
+            self.draw_dict_f_dict(self.env.dataStore.volume, self.env.dataStore.pression,
+                                  "volume", "pression", show=True)
+
 
     def pygame_display_managing(self):
         time = self.clock.tick()
@@ -233,13 +246,34 @@ class Gui:
     def change_sim_state(self):
         self.sim_running = not self.sim_running
 
-    def draw_ft(self, name, dict):
+    def draw_dict(self, name, dict, name_x=None, show=False):
         if len(dict) != 0:
             plt.plot(list(dict.keys()), dict.values())
             plt.title(name + " evolution")
-            plt.xlabel("Time (" + str(self.env.deltaTime) + " s)")
+            if name_x is None:
+                plt.xlabel("Time (" + str(self.env.deltaTime) + " s)")
+            else:
+                plt.xlabel(name_x)
             plt.ylabel(name)
-            plt.show()
+            if show:
+                plt.show()
+
+    def draw_all(self, dict_list):
+
+        for dict in dict_list:
+            plt.plot(list(dict.keys()), dict.values())
+        plt.title("All")
+        plt.xlabel("Time (" + str(self.env.deltaTime) + " s)")
+        plt.ylabel("All")
+        plt.show()
+
+    def draw_dict_f_dict(self, dict, dict2, name, name2, show=False):
+        result = {}
+
+        for k in dict.keys():
+            result[dict[k]] = dict2[k]
+
+        self.draw_dict(name, result, name2, show=show)
 
     def draw_point(self, pos, pxarray):
 
