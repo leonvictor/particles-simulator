@@ -5,3 +5,4 @@ class DataStore :
 
         self.temperatureList = {}
         self.entropyList = {}
+        self.volume = {}

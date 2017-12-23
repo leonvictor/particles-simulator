@@ -24,7 +24,7 @@ class CumulativeForcesBehavior:
 
         # total_acceleration = coulomb_forces + gravity_forces
         # total_acceleration = spring_forces
-        total_acceleration = gravity_forces + coulomb_forces + vdw_forces + spring_forces
+        total_acceleration = gravity_forces + coulomb_forces + vdw_forces #+ spring_forces
         print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
                np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
         #frotements pour le rendu visuel

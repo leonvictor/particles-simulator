@@ -19,7 +19,7 @@ class Environment:
         self.agentList = []
         self.objectList = []
         self.treeDepth = 0
-        self.envGrid = EnvGrid(100)
+        self.envGrid = EnvGrid(50)
         self.influenceList = []
         """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
         self.relative_permittivity = 1.0006
@@ -57,6 +57,7 @@ class Environment:
                 "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
         self.envGrid.save(name)
         self.compute_entropy(name)
+        self.compute_volume()
         self.sequence += 1
 
     def getPerception(self, frustum):
@@ -213,3 +214,19 @@ class Environment:
         entropy = - entropy / log(len(data)+ 10e-10)
 
         self.dataStore.entropyList[self.sequence] = entropy
+
+    def compute_volume(self):
+        min, max = self.envGrid.getBounds()
+        res = np.empty(Environment.DIMENSION)
+        for i in range(len(min)):
+            res[i] = max[i]-min[i]
+        volume = 1
+        for l in res:
+            volume *= l
+        self.dataStore.volume[self.sequence] = volume
+
+
+
+
+
+

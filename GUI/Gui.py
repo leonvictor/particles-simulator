@@ -186,6 +186,7 @@ class Gui:
 
             self.show_temperature()
             self.show_entropy()
+            self.show_volume()
 
     def pygame_display_managing(self):
         time = self.clock.tick()
@@ -248,6 +249,16 @@ class Gui:
             plt.title("Entropy evolution")
             plt.xlabel("time (" + str(self.env.deltaTime) + " s)")
             plt.ylabel("entropy")
+            plt.show()
+
+    def show_volume(self):
+        volume = self.env.dataStore.volume
+
+        if len(volume) != 0:
+            plt.plot(list(volume.keys()), volume.values())
+            plt.title("Volume evolution")
+            plt.xlabel("time (" + str(self.env.deltaTime) + " s)")
+            plt.ylabel("volume")
             plt.show()
 
     def draw_point(self, pos, pxarray):

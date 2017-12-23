@@ -39,6 +39,29 @@ class EnvGrid:
             self.remove(envObj)
             self.add(envObj)
 
+    def getBounds(self):
+
+        boundsMin = list(list(self.grid.keys())[0])
+        boundsMax = list(boundsMin)
+        boundsAgentMin = list(self.grid[list(self.grid.keys())[0]][0].position)
+        boundsAgentMax = list(boundsAgentMin)
+
+        for pos in self.grid.keys():
+            for i in range(len(pos)):
+                if boundsMax[i] <= pos[i]:
+                    boundsMax[i] = pos[i]
+                    for agent in self.grid[pos]:
+                        if agent.position[i] > boundsAgentMax[i]:
+                            boundsAgentMax[i] = agent.position[i]
+                if boundsMin[i] >= pos[i]:
+                    boundsMin[i] = pos[i]
+                    for agent in self.grid[pos]:
+                        if agent.position[i] < boundsAgentMin[i]:
+                            boundsAgentMin[i] = agent.position[i]
+
+        print((boundsAgentMin, boundsAgentMax))
+        return boundsAgentMin, boundsAgentMax
+
     @staticmethod
     def totuple(a):
         try:

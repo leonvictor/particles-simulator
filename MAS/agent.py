@@ -46,6 +46,7 @@ class Agent(EnvObj):
         self.speed = (self.expectedPosition - self.lastPosition)
         self.speed /= self.environment.deltaTime
         self.lastPosition = self.position
+        self.expectedPosition = None
         #print("agent moved to {0}".format(self.position))
 
     def _set_position(self, new_position):
