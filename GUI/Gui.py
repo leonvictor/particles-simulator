@@ -184,9 +184,10 @@ class Gui:
                 continuer, restart = self.pygame_event_managing(params is None)
                 self.pygame_display_managing()
 
-            self.show_temperature()
-            self.show_entropy()
-            self.show_volume()
+            self.draw_ft("Temperature", self.env.dataStore.temperatureList)
+            self.draw_ft("Volume", self.env.dataStore.volume)
+            self.draw_ft("Pression", self.env.dataStore.pression)
+            self.draw_ft("Entropy", self.env.dataStore.entropyList)
 
     def pygame_display_managing(self):
         time = self.clock.tick()
@@ -232,33 +233,12 @@ class Gui:
     def change_sim_state(self):
         self.sim_running = not self.sim_running
 
-    def show_temperature(self):
-        temp = self.env.dataStore.temperatureList
-
-        plt.plot(list(temp.keys()), temp.values())
-        plt.title("Temperature evolution")
-        plt.xlabel("time (" + str(self.env.deltaTime) + " s)")
-        plt.ylabel("temperature")
-        plt.show()
-
-    def show_entropy(self):
-        entropy = self.env.dataStore.entropyList
-
-        if len(entropy) != 0:
-            plt.plot(list(entropy.keys()), entropy.values())
-            plt.title("Entropy evolution")
-            plt.xlabel("time (" + str(self.env.deltaTime) + " s)")
-            plt.ylabel("entropy")
-            plt.show()
-
-    def show_volume(self):
-        volume = self.env.dataStore.volume
-
-        if len(volume) != 0:
-            plt.plot(list(volume.keys()), volume.values())
-            plt.title("Volume evolution")
-            plt.xlabel("time (" + str(self.env.deltaTime) + " s)")
-            plt.ylabel("volume")
+    def draw_ft(self, name, dict):
+        if len(dict) != 0:
+            plt.plot(list(dict.keys()), dict.values())
+            plt.title(name + " evolution")
+            plt.xlabel("Time (" + str(self.env.deltaTime) + " s)")
+            plt.ylabel(name)
             plt.show()
 
     def draw_point(self, pos, pxarray):

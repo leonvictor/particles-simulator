@@ -3,6 +3,7 @@ from time import time
 import numpy as np
 import scipy.constants
 import scipy.constants as const
+import Parameters as param
 
 from MAS.influence import *
 from MAS.Behavior.forcesComputation import *
@@ -24,7 +25,19 @@ class CumulativeForcesBehavior:
 
         # total_acceleration = coulomb_forces + gravity_forces
         # total_acceleration = spring_forces
-        total_acceleration = gravity_forces + coulomb_forces + vdw_forces #+ spring_forces
+        total_acceleration = gravity_forces + coulomb_forces + vdw_forces + spring_forces
+
+        total_acceleration = 0
+
+        if param.GRAVITY:
+            total_acceleration += gravity_forces
+        if param.COULOMB:
+            total_acceleration += coulomb_forces
+        if param.SPRING:
+            total_acceleration += spring_forces
+        if param.WAALS:
+            total_acceleration += vdw_forces
+
         print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
                np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
         #frotements pour le rendu visuel

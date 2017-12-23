@@ -6,7 +6,7 @@ from math import ceil
 from math import log
 import numpy as np
 import Parameters as param
-
+from scipy import constants
 
 class Environment:
     """Environment du MAS"""
@@ -58,6 +58,7 @@ class Environment:
         self.envGrid.save(name)
         self.compute_entropy(name)
         self.compute_volume()
+        self.compute_pressure()
         self.sequence += 1
 
     def getPerception(self, frustum):
@@ -225,6 +226,22 @@ class Environment:
             volume *= l
         self.dataStore.volume[self.sequence] = volume
 
+    def compute_pressure(self):
+        R = 8.314
+        n = len(self.agentList)/scipy.constants.N_A
+        V = self.dataStore.volume[self.sequence]
+        T = self.dataStore.temperatureList[self.sequence]
+        # Pc = 1
+        # Tc = 1
+        # a = 27*R*R*Tc*Tc/(64*Pc)
+        # b = R*Tc/(8*Pc)
+        a = 1
+        b = 1
+
+        #empirical Waals equation
+        P = ((n*R*T)/(V - n*b)) - (n*n*a/V*V)
+
+        self.dataStore.pression[self.sequence] = P
 
 
 

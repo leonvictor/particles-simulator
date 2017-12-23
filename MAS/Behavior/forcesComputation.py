@@ -1,15 +1,16 @@
 import numpy as np
 import scipy.constants
 import scipy.constants as const
+import Parameters as param
 
 class ForcesComputation :
 
     k = 1 / 4 * scipy.constants.pi * scipy.constants.epsilon_0
-    spring_length = 50
-    coulomb_factor = 5*10e2
-    waals_factor = 10e-33
-    gravity_factor = 5*10e1
-    spring_factor = 10e-4
+    spring_length = param.spring_length
+    coulomb_factor = param.coulomb_factor
+    waals_factor = param.waals_factor
+    gravity_factor = param.gravity_factor
+    spring_factor = param.spring_factor
 
     @staticmethod
     def gravity(agent, perceptions):
