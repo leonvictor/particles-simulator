@@ -1,21 +1,18 @@
-from Environement.dataStore import *
+from Environment.dataStore import *
 from MAS.Behavior.cumulativeForcesBehavior import *
 from MAS.agent import *
-from Environement.envGrid import *
+from Environment.envGrid import *
 from math import ceil
 from math import log
 import numpy as np
 import Parameters as param
-from scipy import constants
+
 
 class Environment:
     """Environment du MAS"""
 
-    DIMENSION = 2
-    BOX_SIZE = 600
-
     def __init__(self):
-        self.dimension = Environment.DIMENSION
+        self.dimension = param.DIMENSIONS
         self.agentList = []
         self.objectList = []
         self.treeDepth = 0
@@ -24,7 +21,6 @@ class Environment:
         """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
         self.relative_permittivity = 1.0006
         # mise à jour du temps
-        self.deltaTime = 0.1
         self.lastCallTime = time()
         self.dataStore = DataStore()
         self.startingTime = self.lastCallTime
@@ -86,30 +82,43 @@ class Environment:
         # for i in self.influenceList:
 
         if param.BORDER_MODE is param.BorderMode.DONUT:
-            out_of_boarder = False
+            out_of_border = False
             position_saved = np.array(influence.position)
-            for i in range(0, Environment.DIMENSION):
-                if influence.position[i] > Environment.BOX_SIZE/2:
-                    out_of_boarder = True
-                    influence.position[i] = -Environment.BOX_SIZE/2 + influence.position[i] % (Environment.BOX_SIZE / 2)
-                elif influence.position[i] < -Environment.BOX_SIZE/2:
-                    out_of_boarder = True
-                    influence.position[i] = Environment.BOX_SIZE/2 + influence.position[i] % (-Environment.BOX_SIZE / 2)
-            if(out_of_boarder):
+            for i in range(0, param.DIMENSION):
+                if influence.position[i] > param.BOX_SIZE / 2:
+                    out_of_border = True
+                    influence.position[i] = -param.BOX_SIZE / 2 + influence.position[i] % (
+                            param.BOX_SIZE / 2)
+                elif influence.position[i] < -param.BOX_SIZE / 2:
+                    out_of_border = True
+                    influence.position[i] = param.BOX_SIZE / 2 + influence.position[i] % (
+                            -param.BOX_SIZE / 2)
+            if out_of_border:
                 influence.agent.expectedPosition = position_saved
             else:
                 influence.agent.expectedPosition = None
 
-        elif param.BORDER_MODE is param.BorderMode.SOLID:
+        elif param.BORDER_MODE is param.BorderMode.BASIC:
             # clamp influence so that particles remain in the environment
             # we use a random wiggle room to avoid overlapping particles
             rnd = np.random.uniform(0.0001, 0.005)
             influence.position = np.clip(influence.position,
-                                         -Environment.BOX_SIZE / 2 + rnd,
-                                         Environment.BOX_SIZE / 2 - rnd)
+                                         -param.BOX_SIZE / 2 + rnd,
+                                         param.BOX_SIZE / 2 - rnd)
+        elif param.BORDER_MODE is param.BORDER_MODE.SOLID:
+            while not all([-param.BOX_SIZE/2 < x < param.BOX_SIZE/2 for x in influence.position]):
+                for i in range(0, param.DIMENSIONS):
+                    # if np.linalg.absolute(influence.position[i]) > param.BOX_SIZE/2:
+                    #     influence.position[i] = - (influence.position[i]
+                    #                                + np.sign(influence.position[i])*param.BOX_SIZE/2
+                    #                                - influence.agent.position[i])
+                    if influence.position[i] > param.BOX_SIZE / 2:
+                        influence.position[i] = - (influence.position[i] - param.BOX_SIZE / 2 - influence.agent.position[i])
+                    elif influence.position[i] < -param.BOX_SIZE / 2:
+                        influence.position[i] = -(influence.position[i] + param.BOX_SIZE / 2 - influence.agent.position[i])
 
-        # influence.position[0] = max(min(Environment.BOX_SIZE / 2, influence.position[0]), -Environment.BOX_SIZE / 2)
-        # influence.position[1] = max(min(Environment.BOX_SIZE / 2, influence.position[1]), -Environment.BOX_SIZE / 2)
+        # np.where((influence.position > param.BOX_SIZE or influence.position < - param.BOX_SIZE),
+        #         -influence.position, influence.position)
         return influence
 
     def apply(self, influence):
@@ -117,7 +126,7 @@ class Environment:
             influence.agent.position = influence.position
 
     def addAgent(self):
-        new_agent = Agent(self, RadiusFrustum(500), CumulativeForcesBehavior())
+        new_agent = Agent(self, RadiusFrustum(param.PERCEPTION_RADIUS), CumulativeForcesBehavior())
         self.agentList.append(new_agent)
         self.envGrid.add(new_agent)
 
@@ -212,15 +221,15 @@ class Environment:
 
         for pi in data.values():
             entropy += pi * log(pi)
-        entropy = - entropy / log(len(data)+ 10e-10)
+        entropy = - entropy / log(len(data) + 10e-10)
 
         self.dataStore.entropyList[self.sequence] = entropy
 
     def compute_volume(self):
         min, max = self.envGrid.getBounds()
-        res = np.empty(Environment.DIMENSION)
+        res = np.empty(param.DIMENSIONS)
         for i in range(len(min)):
-            res[i] = max[i]-min[i]
+            res[i] = max[i] - min[i]
         volume = 1
         for l in res:
             volume *= l
@@ -228,7 +237,7 @@ class Environment:
 
     def compute_pressure(self):
         R = 8.314
-        n = len(self.agentList)/scipy.constants.N_A
+        n = len(self.agentList) / scipy.constants.N_A
         V = self.dataStore.volume[self.sequence]
         T = self.dataStore.temperatureList[self.sequence]
         # Pc = 1
@@ -238,12 +247,7 @@ class Environment:
         a = 1
         b = 1
 
-        #empirical Waals equation
-        P = ((n*R*T)/(V - n*b)) - (n*n*a/V*V)
+        # empirical Waals equation
+        P = ((n * R * T) / (V - n * b)) - (n * n * a / V * V)
 
         self.dataStore.pression[self.sequence] = P
-
-
-
-
-

@@ -1,8 +1,9 @@
 from time import time
 
-from Environement.envObj import *
+from Environment.envObj import *
 from MAS.Behavior.cumulativeForcesBehavior import CumulativeForcesBehavior
 from MAS.Frustum.radiusFrustum import *
+import Parameters as param
 from scipy import constants as const
 
 
@@ -44,7 +45,7 @@ class Agent(EnvObj):
         if self.expectedPosition is None:
             self.expectedPosition = self.position
         self.speed = (self.expectedPosition - self.lastPosition)
-        self.speed /= self.environment.deltaTime
+        self.speed /= param.DELTA_TIME
         self.lastPosition = self.position
         self.expectedPosition = None
         #print("agent moved to {0}".format(self.position))

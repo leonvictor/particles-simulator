@@ -44,6 +44,6 @@ class CumulativeForcesBehavior:
         total_acceleration -= self.agent.speed / self.friction
 
         self.agent.acceleration = total_acceleration
-        dt = self.environment.deltaTime
+        dt = param.DELTA_TIME
         targetPos = self.agent.acceleration*dt*dt + self.agent.speed*dt + self.agent.position
         return Influence(self.agent, InfluenceType.MOVE, position=targetPos)

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sgc.widgets._locals import GUI
 
 import Parameters as param
-from Environement.environment import Environment
+from Environment.environment import Environment
 
 
 class Gui:
@@ -251,7 +251,7 @@ class Gui:
             plt.plot(list(dict.keys()), dict.values())
             plt.title(name + " evolution")
             if name_x is None:
-                plt.xlabel("Time (" + str(self.env.deltaTime) + " s)")
+                plt.xlabel("Time (" + str(param.DELTA_TIME) + " s)")
             else:
                 plt.xlabel(name_x)
             plt.ylabel(name)
