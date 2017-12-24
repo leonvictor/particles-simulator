@@ -38,7 +38,7 @@ class Agent(EnvObj):
             else:
                 influence = self.behavior.act(self.position, perceptions)
             influence.agent = self
-            self.environment.addInfluence(influence)
+            self.environment.add_influence(influence)
 
     def moved(self):
         """"Update speed and deltaTime"""

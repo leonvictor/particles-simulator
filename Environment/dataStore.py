@@ -7,9 +7,11 @@ class DataStore :
         self.entropyList = {}
         self.volume = {}
         self.pression = {}
+        self.border_collisions = {}
 
     def clear(self):
         self.temperatureList.clear()
         self.entropyList.clear()
         self.volume.clear()
         self.pression.clear()
+        self.border_collisions.clear()

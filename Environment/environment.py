@@ -25,6 +25,7 @@ class Environment:
         self.startingTime = self.lastCallTime
         self.gasConstant = 8.3144598
         self.sequence = 0
+        self.nb_border_collision = 0
 
     def actualize(self, mass, charge, polarizability, dipole_moment, stiffness):
 
@@ -39,9 +40,10 @@ class Environment:
 
         length = len(self.influenceList)
         avrSpeed = 0
+        self.nb_border_collision = 0
         for i in range(length):
             influence = self.influenceList.pop()
-            influence = self.filterInfluence(influence)
+            influence = self.filter_influence(influence)
             self.apply(influence)
             avrSpeed += np.linalg.norm(influence.agent.speed) * influence.agent.molar_mass
         avrSpeed /= length
@@ -54,7 +56,7 @@ class Environment:
         self.compute_entropy(name)
         self.compute_volume()
         self.compute_pressure()
-        self.sequence += 1
+        self.compute_border_collisions()
 
     def getPerception(self, frustum):
 
@@ -74,10 +76,10 @@ class Environment:
 
         return agentPerception
 
-    def addInfluence(self, influence):
+    def add_influence(self, influence):
         self.influenceList.append(influence)
 
-    def filterInfluence(self, influence):
+    def filter_influence(self, influence):
         # for i in self.influenceList:
 
         if param.BORDER_MODE is param.BorderMode.DONUT:
@@ -106,23 +108,27 @@ class Environment:
                                          param.BOX_SIZE / 2 - rnd)
         elif param.BORDER_MODE is param.BORDER_MODE.SOLID:
             # we need this loop in case a particle hits multiple borders during one time step
-            while not all([-param.BOX_SIZE/2 < x < param.BOX_SIZE/2 for x in influence.position]):
+            while not all([-param.BOX_SIZE / 2 < x < param.BOX_SIZE / 2 for x in influence.position]):
                 for i in range(0, param.DIMENSIONS):
                     # if np.linalg.absolute(influence.position[i]) > param.BOX_SIZE/2:
                     #     influence.position[i] = - (influence.position[i]
                     #                                + np.sign(influence.position[i])*param.BOX_SIZE/2
                     #                                - influence.agent.position[i])
                     if influence.position[i] > param.BOX_SIZE / 2:
-                        influence.position[i] = - (influence.position[i] - param.BOX_SIZE / 2 - influence.agent.position[i])
+                        self.nb_border_collision += 1
+                        influence.position[i] = - (
+                                influence.position[i] - param.BOX_SIZE / 2 - influence.agent.position[i])
                     elif influence.position[i] < -param.BOX_SIZE / 2:
-                        influence.position[i] = -(influence.position[i] + param.BOX_SIZE / 2 - influence.agent.position[i])
+                        self.nb_border_collision += 1
+                        influence.position[i] = -(
+                                influence.position[i] + param.BOX_SIZE / 2 - influence.agent.position[i])
         return influence
 
     def apply(self, influence):
         if influence.type == InfluenceType.MOVE:
             influence.agent.position = influence.position
 
-    def addAgent(self):
+    def add_agent(self):
         new_agent = Agent(self, RadiusFrustum(param.PERCEPTION_RADIUS), CumulativeForcesBehavior())
         self.agentList.append(new_agent)
         self.envGrid.add(new_agent)
@@ -248,3 +254,6 @@ class Environment:
         P = ((n * R * T) / (V - n * b)) - (n * n * a / V * V)
 
         self.dataStore.pression[self.sequence] = P
+
+    def compute_border_collisions(self):
+        self.dataStore.border_collisions[self.sequence] = self.nb_border_collision

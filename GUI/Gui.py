@@ -18,7 +18,7 @@ class Gui:
             del self.env
         self.env = Environment()
         for i in range(param.NB_AGENTS):
-            self.env.addAgent()
+            self.env.add_agent()
 
     def __init__(self):
 
@@ -97,14 +97,14 @@ class Gui:
         self.polarizability_scale.add(3)
 
         self.stiffness_scale = sgc.Scale(label="Stiffness",
-                                              label_side="top",
-                                              label_col=self.fgColor,
-                                              pos=(10, 300),
-                                              min=1,
-                                              max=100,
-                                              min_step=1,
-                                              max_step=99
-                                              )
+                                         label_side="top",
+                                         label_col=self.fgColor,
+                                         pos=(10, 300),
+                                         min=1,
+                                         max=100,
+                                         min_step=1,
+                                         max_step=99
+                                         )
         self.stiffness_scale.add(3)
 
         self.clock = pygame.time.Clock()
@@ -185,22 +185,23 @@ class Gui:
                 continuer, restart = self.pygame_event_managing(params is None)
                 self.pygame_display_managing()
 
-
-            plt.subplot(3,2, 1)
+            plt.subplot(4, 2, 1)
             self.draw_dict("Temperature", self.env.dataStore.temperatureList)
-            plt.subplot(3, 2, 2)
+            plt.subplot(4, 2, 2)
             self.draw_dict("Volume", self.env.dataStore.volume)
-            plt.subplot(3, 2, 3)
+            plt.subplot(4, 2, 3)
             self.draw_dict("Pression", self.env.dataStore.pression)
-            plt.subplot(3, 2, 4)
+            plt.subplot(4, 2, 4)
             self.draw_dict("Entropy", self.env.dataStore.entropyList)
-            plt.subplot(3, 2, 5)
+            plt.subplot(4, 2, 5)
             self.draw_dict_f_dict(self.env.dataStore.temperatureList, self.env.dataStore.pression,
                                   "temperature", "pression")
-            plt.subplot(3, 2, 6)
+            plt.subplot(4, 2, 6)
             self.draw_dict_f_dict(self.env.dataStore.volume, self.env.dataStore.pression,
-                                  "volume", "pression", show=True)
-
+                                  "volume", "pression")
+            #Ca marche pas :(
+            plt.subplot(4, 2, 7)
+            self.draw_dict("Pression (particle collisions against borders)", self.env.dataStore.border_collisions, show=True)
 
     def pygame_display_managing(self):
         time = self.clock.tick()
@@ -213,11 +214,11 @@ class Gui:
         del pxarray
         sgc.update(time)
 
-        if(param.BORDER_MODE != param.BorderMode.NONE):
-            pygame.draw.rect(self.screen.image, self.fgColor, (self.dw-param.BOX_SIZE/2,
-                                                           self.dh-param.BOX_SIZE/2,
-                                                           param.BOX_SIZE,
-                                                           param.BOX_SIZE), 1)
+        if (param.BORDER_MODE != param.BorderMode.NONE):
+            pygame.draw.rect(self.screen.image, self.fgColor, (self.dw - param.BOX_SIZE / 2,
+                                                               self.dh - param.BOX_SIZE / 2,
+                                                               param.BOX_SIZE,
+                                                               param.BOX_SIZE), 1)
         pygame.display.flip()
 
     def pygame_event_managing(self, param_change_allowed):
