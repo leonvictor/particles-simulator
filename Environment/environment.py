@@ -12,7 +12,6 @@ class Environment:
     """Environment du MAS"""
 
     def __init__(self):
-        self.dimension = param.DIMENSIONS
         self.agentList = []
         self.objectList = []
         self.treeDepth = 0
@@ -106,6 +105,7 @@ class Environment:
                                          -param.BOX_SIZE / 2 + rnd,
                                          param.BOX_SIZE / 2 - rnd)
         elif param.BORDER_MODE is param.BORDER_MODE.SOLID:
+            # we need this loop in case a particle hits multiple borders during one time step
             while not all([-param.BOX_SIZE/2 < x < param.BOX_SIZE/2 for x in influence.position]):
                 for i in range(0, param.DIMENSIONS):
                     # if np.linalg.absolute(influence.position[i]) > param.BOX_SIZE/2:
@@ -116,9 +116,6 @@ class Environment:
                         influence.position[i] = - (influence.position[i] - param.BOX_SIZE / 2 - influence.agent.position[i])
                     elif influence.position[i] < -param.BOX_SIZE / 2:
                         influence.position[i] = -(influence.position[i] + param.BOX_SIZE / 2 - influence.agent.position[i])
-
-        # np.where((influence.position > param.BOX_SIZE or influence.position < - param.BOX_SIZE),
-        #         -influence.position, influence.position)
         return influence
 
     def apply(self, influence):

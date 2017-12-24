@@ -15,8 +15,8 @@ class Agent(EnvObj):
 
         self.behavior = behavior
         self.initBehavior(behavior)
-        self.speed = np.zeros(self.environment.dimension)
-        self.acceleration = np.zeros(self.environment.dimension)
+        self.speed = np.zeros(param.DIMENSIONS)
+        self.acceleration = np.zeros(param.DIMENSIONS)
 
         self.lastPosition = self.position
         self.expectedPosition = None
