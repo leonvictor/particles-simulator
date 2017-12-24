@@ -207,7 +207,7 @@ class Gui:
         self.screen.fill(self.bgColor)
         pxarray = pygame.PixelArray(self.screen.image)
         for el in self.env.agentList:
-            self.draw_point(el.position, pxarray)
+            self.draw_point(el.position, pxarray, el.color)
         for el in self.env.objectList:
             self.draw_point(el.position, pxarray)
         del pxarray
@@ -275,9 +275,9 @@ class Gui:
 
         self.draw_dict(name, result, name2, show=show)
 
-    def draw_point(self, pos, pxarray):
+    def draw_point(self, pos, pxarray, color = (0, 0, 0)):
 
-        radius = 1
+        radius = 3
         (x, y) = pos
         x = int(x)
         y = int(y)
@@ -293,7 +293,8 @@ class Gui:
 
         for i in range(x - radius, x + radius + 1):
             for j in range(y - radius, y + radius + 1):
-                pxarray[i, j] = (uniform(5, 10) * 10, uniform(0, 0), uniform(0, 32) * 8)
+                print(color)
+                pxarray[i, j] = color
                 # self.pxarray[i, j] = (0, 0, 0)
 
     def __del__(self):

@@ -22,7 +22,8 @@ class Agent(EnvObj):
 
         self.frustum = frustum
         self.frustum.agent = self
-
+        self.entropy_class = None
+        self.color = (0, 0, 0)
         #print("agent créé")
 
     def initBehavior(self, behavior):

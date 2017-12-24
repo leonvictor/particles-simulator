@@ -2,8 +2,7 @@ from Environement.dataStore import *
 from MAS.Behavior.cumulativeForcesBehavior import *
 from MAS.agent import *
 from Environement.envGrid import *
-from math import ceil
-from math import log
+from math import ceil, log, sqrt
 import numpy as np
 import Parameters as param
 from scipy import constants
@@ -11,20 +10,20 @@ from scipy import constants
 class Environment:
     """Environment du MAS"""
 
-    DIMENSION = 2
-    BOX_SIZE = 600
+    DIMENSION = param.DIMENSION
+    BOX_SIZE = param.BOX_SIZE
 
     def __init__(self):
         self.dimension = Environment.DIMENSION
         self.agentList = []
         self.objectList = []
         self.treeDepth = 0
-        self.envGrid = EnvGrid(50)
+        self.envGrid = EnvGrid(param.GRID_SIZE)
         self.influenceList = []
         """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
         self.relative_permittivity = 1.0006
         # mise à jour du temps
-        self.deltaTime = 0.1
+        self.deltaTime = param.TIME_STEP
         self.lastCallTime = time()
         self.dataStore = DataStore()
         self.startingTime = self.lastCallTime
@@ -56,7 +55,8 @@ class Environment:
         name = (str(mass) + "_" + str(charge) + "_" + str(polarizability) +
                 "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
         self.envGrid.save(name)
-        self.compute_entropy(name)
+        #self.compute_entropy(name)
+        self.compute_social_entropy()
         self.compute_volume()
         self.compute_pressure()
         self.sequence += 1
@@ -243,7 +243,66 @@ class Environment:
 
         self.dataStore.pression[self.sequence] = P
 
+    def compute_social_entropy(self):
 
+        #Moyenne et classes par défaut
+        agentListCopy = list(self.agentList)
+        class_dict = {}
+        index_class = 0
+        dist_moy = 0
+        cmpt = 0
+        while len(agentListCopy) != 0:
+            agent = agentListCopy.pop()
+            agent.entropy_class = index_class
+            class_dict[index_class] = [agent]
+            index_class += 1
+            for other in agentListCopy:
+                norm = np.linalg.norm(agent.position - other.position)
+                dist_moy += norm
+                cmpt += 1
+        dist_moy /= cmpt
+        self.dataStore.dist_moy[self.sequence] = dist_moy
 
+        #Ecart type
+        agentListCopy = list(self.agentList)
+        ecart_type = 0
+        cmpt = 0
+        while len(agentListCopy) != 0:
+            agent = agentListCopy.pop()
+            for other in agentListCopy:
+                cmpt += 1
+                ecart_type += (dist_moy - np.linalg.norm(agent.position - other.position))**2
+        ecart_type = sqrt(ecart_type / cmpt)
+
+        #Classes pour l'entropie
+        agentListCopy = list(self.agentList)
+        while len(agentListCopy) != 0:
+            agent = agentListCopy.pop()
+            for other in agentListCopy:
+                norm = np.linalg.norm(agent.position - other.position)
+                if norm < (dist_moy - ecart_type) \
+                        and agent.entropy_class != other.entropy_class:
+                    new = min(agent.entropy_class, other.entropy_class)
+                    old = max(agent.entropy_class, other.entropy_class)
+                    class_dict[new].extend(class_dict[old])
+                    for a in class_dict[old]:
+                        a.entropy_class = new
+                    del class_dict[old]
+
+        print(len(class_dict))
+
+        #entropie
+        entropy = 0
+        for key in class_dict.keys():
+            pi = len(class_dict[key])/len(self.agentList)
+            entropy += pi * log(pi)
+        entropy = - entropy / log(len(self.agentList))
+        self.dataStore.entropyList[self.sequence] = entropy
+
+        #Couleur des classes en fonction de la classe
+        keylist = class_dict.keys()
+        for agent in self.agentList:
+            index = list(keylist).index(agent.entropy_class)
+            agent.color = (int(index * 255/len(class_dict)), 0, int(255-index * 255/len(class_dict)))
 
 

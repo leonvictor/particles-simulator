@@ -15,7 +15,6 @@ class EnvGrid:
     def add(self, envObj):
         grid_pos = envObj.position//self.side
         grid_pos = EnvGrid.totuple(grid_pos)
-
         envObj.gridPos = grid_pos
         envObj.envGrid = self
 
@@ -26,7 +25,7 @@ class EnvGrid:
 
     def remove(self, envObj):
         self.grid[envObj.gridPos].remove(envObj)
-        if len(self.grid[envObj.gridPos]) == 0 :
+        if len(self.grid[envObj.gridPos]) == 0:
             del self.grid[envObj.gridPos]
 
         envObj.envGrid = None
@@ -79,16 +78,12 @@ class EnvGrid:
         return result
 
     def buildList(self, gridPos, rank, leng, i):
-        if(i == leng):
+        if i == leng:
             return gridPos
-
         listBase = []
-
         for cmpt in range(0, i):
                 listBase.append(gridPos[cmpt])
-
         listOfLists = []
-
         for j in range(int(gridPos[i]-rank), int(gridPos[i]+rank+1)):
             listBaseCopy = list(listBase)
             listBaseCopy.append(j)
@@ -96,18 +91,12 @@ class EnvGrid:
             for k in range(0, m):
                 listBaseCopy.append(0)
             listOfLists.append(listBaseCopy)
-
-        if (i + 1 == leng):
+        if i + 1 == leng:
             return listOfLists
-
         result = []
-
         for el in listOfLists:
             result.extend(self.buildList(el, rank, leng, i+1))
-
         return result
-
-
 
     def save(self, name):
 
@@ -127,6 +116,7 @@ class EnvGrid:
 
         EnvGrid.WriteListToCSV(self.path + name + str(cmpt) + self.extension, fieldnames, data)
 
+    @staticmethod
     def load(name):
         datalist = EnvGrid.ReadCSVasList( EnvGrid.path + name)
 
@@ -140,7 +130,7 @@ class EnvGrid:
 
         return result
 
-
+    @staticmethod
     def WriteListToCSV(csv_file, csv_columns, data_list):
 
         with open(csv_file, 'w') as csvfile:
@@ -149,9 +139,11 @@ class EnvGrid:
             for data in data_list:
                 writer.writerow(data)
 
+    @staticmethod
     def ReadCSVasList(csv_file):
         with open(csv_file) as csvfile:
             reader = csv.reader(csvfile, dialect='excel', quoting=csv.QUOTE_NONNUMERIC)
             datalist = list(reader)
             return datalist
         return None
+

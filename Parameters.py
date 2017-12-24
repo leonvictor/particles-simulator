@@ -14,6 +14,11 @@ NB_AGENTS = 10
 BOX_SIZE = 600
 BORDER_MODE = BorderMode.DONUT
 
+#Environment
+DIMENSION = 2
+GRID_SIZE = 50
+TIME_STEP = 0.1
+
 # Forces
 GRAVITY = True
 WAALS = True
