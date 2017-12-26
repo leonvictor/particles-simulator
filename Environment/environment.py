@@ -1,11 +1,11 @@
 from Environement.dataStore import *
 from MAS.Behavior.cumulativeForcesBehavior import *
 from MAS.agent import *
-from Environement.envGrid import *
 from math import ceil, log, sqrt
+from Environement.envGrid import *
 import numpy as np
 import Parameters as param
-from scipy import constants
+
 
 class Environment:
     """Environment du MAS"""
@@ -14,7 +14,6 @@ class Environment:
     BOX_SIZE = param.BOX_SIZE
 
     def __init__(self):
-        self.dimension = Environment.DIMENSION
         self.agentList = []
         self.objectList = []
         self.treeDepth = 0
@@ -29,6 +28,7 @@ class Environment:
         self.startingTime = self.lastCallTime
         self.gasConstant = 8.3144598
         self.sequence = 0
+        self.nb_border_collision = 0
 
     def actualize(self, mass, charge, polarizability, dipole_moment, stiffness):
 
@@ -43,9 +43,10 @@ class Environment:
 
         length = len(self.influenceList)
         avrSpeed = 0
+        self.nb_border_collision = 0
         for i in range(length):
             influence = self.influenceList.pop()
-            influence = self.filterInfluence(influence)
+            influence = self.filter_influence(influence)
             self.apply(influence)
             avrSpeed += np.linalg.norm(influence.agent.speed) * influence.agent.molar_mass
         avrSpeed /= length
@@ -59,7 +60,7 @@ class Environment:
         self.compute_social_entropy()
         self.compute_volume()
         self.compute_pressure()
-        self.sequence += 1
+        self.compute_border_collisions()
 
     def getPerception(self, frustum):
 
@@ -79,45 +80,60 @@ class Environment:
 
         return agentPerception
 
-    def addInfluence(self, influence):
+    def add_influence(self, influence):
         self.influenceList.append(influence)
 
-    def filterInfluence(self, influence):
+    def filter_influence(self, influence):
         # for i in self.influenceList:
 
         if param.BORDER_MODE is param.BorderMode.DONUT:
-            out_of_boarder = False
+            out_of_border = False
             position_saved = np.array(influence.position)
-            for i in range(0, Environment.DIMENSION):
-                if influence.position[i] > Environment.BOX_SIZE/2:
-                    out_of_boarder = True
-                    influence.position[i] = -Environment.BOX_SIZE/2 + influence.position[i] % (Environment.BOX_SIZE / 2)
-                elif influence.position[i] < -Environment.BOX_SIZE/2:
-                    out_of_boarder = True
-                    influence.position[i] = Environment.BOX_SIZE/2 + influence.position[i] % (-Environment.BOX_SIZE / 2)
-            if(out_of_boarder):
+            for i in range(0, param.DIMENSION):
+                if influence.position[i] > param.BOX_SIZE / 2:
+                    out_of_border = True
+                    influence.position[i] = -param.BOX_SIZE / 2 + influence.position[i] % (
+                            param.BOX_SIZE / 2)
+                elif influence.position[i] < -param.BOX_SIZE / 2:
+                    out_of_border = True
+                    influence.position[i] = param.BOX_SIZE / 2 + influence.position[i] % (
+                            -param.BOX_SIZE / 2)
+            if out_of_border:
                 influence.agent.expectedPosition = position_saved
             else:
                 influence.agent.expectedPosition = None
 
-        elif param.BORDER_MODE is param.BorderMode.SOLID:
+        elif param.BORDER_MODE is param.BorderMode.BASIC:
             # clamp influence so that particles remain in the environment
             # we use a random wiggle room to avoid overlapping particles
             rnd = np.random.uniform(0.0001, 0.005)
             influence.position = np.clip(influence.position,
-                                         -Environment.BOX_SIZE / 2 + rnd,
-                                         Environment.BOX_SIZE / 2 - rnd)
-
-        # influence.position[0] = max(min(Environment.BOX_SIZE / 2, influence.position[0]), -Environment.BOX_SIZE / 2)
-        # influence.position[1] = max(min(Environment.BOX_SIZE / 2, influence.position[1]), -Environment.BOX_SIZE / 2)
+                                         -param.BOX_SIZE / 2 + rnd,
+                                         param.BOX_SIZE / 2 - rnd)
+        elif param.BORDER_MODE is param.BORDER_MODE.SOLID:
+            # we need this loop in case a particle hits multiple borders during one time step
+            while not all([-param.BOX_SIZE / 2 < x < param.BOX_SIZE / 2 for x in influence.position]):
+                for i in range(0, param.DIMENSIONS):
+                    # if np.linalg.absolute(influence.position[i]) > param.BOX_SIZE/2:
+                    #     influence.position[i] = - (influence.position[i]
+                    #                                + np.sign(influence.position[i])*param.BOX_SIZE/2
+                    #                                - influence.agent.position[i])
+                    if influence.position[i] > param.BOX_SIZE / 2:
+                        self.nb_border_collision += 1
+                        influence.position[i] = - (
+                                influence.position[i] - param.BOX_SIZE / 2 - influence.agent.position[i])
+                    elif influence.position[i] < -param.BOX_SIZE / 2:
+                        self.nb_border_collision += 1
+                        influence.position[i] = -(
+                                influence.position[i] + param.BOX_SIZE / 2 - influence.agent.position[i])
         return influence
 
     def apply(self, influence):
         if influence.type == InfluenceType.MOVE:
             influence.agent.position = influence.position
 
-    def addAgent(self):
-        new_agent = Agent(self, RadiusFrustum(500), CumulativeForcesBehavior())
+    def add_agent(self):
+        new_agent = Agent(self, RadiusFrustum(param.PERCEPTION_RADIUS), CumulativeForcesBehavior())
         self.agentList.append(new_agent)
         self.envGrid.add(new_agent)
 
@@ -212,15 +228,15 @@ class Environment:
 
         for pi in data.values():
             entropy += pi * log(pi)
-        entropy = - entropy / log(len(data)+ 10e-10)
+        entropy = - entropy / log(len(data) + 10e-10)
 
         self.dataStore.entropyList[self.sequence] = entropy
 
     def compute_volume(self):
         min, max = self.envGrid.getBounds()
-        res = np.empty(Environment.DIMENSION)
+        res = np.empty(param.DIMENSIONS)
         for i in range(len(min)):
-            res[i] = max[i]-min[i]
+            res[i] = max[i] - min[i]
         volume = 1
         for l in res:
             volume *= l
@@ -228,7 +244,7 @@ class Environment:
 
     def compute_pressure(self):
         R = 8.314
-        n = len(self.agentList)/scipy.constants.N_A
+        n = len(self.agentList) / scipy.constants.N_A
         V = self.dataStore.volume[self.sequence]
         T = self.dataStore.temperatureList[self.sequence]
         # Pc = 1
@@ -238,8 +254,8 @@ class Environment:
         a = 1
         b = 1
 
-        #empirical Waals equation
-        P = ((n*R*T)/(V - n*b)) - (n*n*a/V*V)
+        # empirical Waals equation
+        P = ((n * R * T) / (V - n * b)) - (n * n * a / V * V)
 
         self.dataStore.pression[self.sequence] = P
 
@@ -305,4 +321,5 @@ class Environment:
             index = list(keylist).index(agent.entropy_class)
             agent.color = (int(index * 255/len(class_dict)), 0, int(255-index * 255/len(class_dict)))
 
-
+    def compute_border_collisions(self):
+        self.dataStore.border_collisions[self.sequence] = self.nb_border_collision

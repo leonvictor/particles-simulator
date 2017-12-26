@@ -9,10 +9,13 @@ class BorderMode(Enum):
 
 
 # Simulation parameters
+DIMENSIONS = 2
 NB_OCCURRENCES = 5
 NB_AGENTS = 10
 BOX_SIZE = 600
-BORDER_MODE = BorderMode.DONUT
+BORDER_MODE = BorderMode.SOLID
+DELTA_TIME = 0.05
+PERCEPTION_RADIUS = 500
 
 #Environment
 DIMENSION = 2
@@ -22,7 +25,7 @@ TIME_STEP = 0.1
 # Forces
 GRAVITY = True
 WAALS = True
-SPRING = True
+SPRING = False
 COULOMB = True
 
 # Forces factors

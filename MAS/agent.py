@@ -1,8 +1,9 @@
 from time import time
 
-from Environement.envObj import *
+from Environment.envObj import *
 from MAS.Behavior.cumulativeForcesBehavior import CumulativeForcesBehavior
 from MAS.Frustum.radiusFrustum import *
+import Parameters as param
 from scipy import constants as const
 
 
@@ -14,8 +15,8 @@ class Agent(EnvObj):
 
         self.behavior = behavior
         self.initBehavior(behavior)
-        self.speed = np.zeros(self.environment.dimension)
-        self.acceleration = np.zeros(self.environment.dimension)
+        self.speed = np.zeros(param.DIMENSIONS)
+        self.acceleration = np.zeros(param.DIMENSIONS)
 
         self.lastPosition = self.position
         self.expectedPosition = None
@@ -38,14 +39,14 @@ class Agent(EnvObj):
             else:
                 influence = self.behavior.act(self.position, perceptions)
             influence.agent = self
-            self.environment.addInfluence(influence)
+            self.environment.add_influence(influence)
 
     def moved(self):
         """"Update speed and deltaTime"""
         if self.expectedPosition is None:
             self.expectedPosition = self.position
         self.speed = (self.expectedPosition - self.lastPosition)
-        self.speed /= self.environment.deltaTime
+        self.speed /= param.DELTA_TIME
         self.lastPosition = self.position
         self.expectedPosition = None
         #print("agent moved to {0}".format(self.position))
