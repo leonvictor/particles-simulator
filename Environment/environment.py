@@ -1,8 +1,8 @@
-from Environement.dataStore import *
+from Environment.dataStore import *
 from MAS.Behavior.cumulativeForcesBehavior import *
 from MAS.agent import *
 from math import ceil, log, sqrt
-from Environement.envGrid import *
+from Environment.envGrid import *
 import numpy as np
 import Parameters as param
 
@@ -53,16 +53,17 @@ class Environment:
 
         self.dataStore.temperatureList[self.sequence] = avrSpeed / (3 * self.gasConstant)
 
-        name = (str(mass) + "_" + str(charge) + "_" + str(polarizability) +
-                "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
-        self.envGrid.save(name)
+        #name = (str(mass) + "_" + str(charge) + "_" + str(polarizability) +
+        #        "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
+        #self.envGrid.save(name)
         #self.compute_entropy(name)
         self.compute_social_entropy()
         self.compute_volume()
         self.compute_pressure()
         self.compute_border_collisions()
+        self.sequence += 1
 
-    def getPerception(self, frustum):
+    def get_perception(self, frustum):
 
         agentPerception = []
 
@@ -319,7 +320,7 @@ class Environment:
         keylist = class_dict.keys()
         for agent in self.agentList:
             index = list(keylist).index(agent.entropy_class)
-            agent.color = (int(index * 255/len(class_dict)), 0, int(255-index * 255/len(class_dict)))
+            agent.color = (int(index * 255/len(class_dict)), int(255-index * 255/len(class_dict)), int(255-index * 255/len(class_dict)))
 
     def compute_border_collisions(self):
         self.dataStore.border_collisions[self.sequence] = self.nb_border_collision

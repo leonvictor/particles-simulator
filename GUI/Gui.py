@@ -3,7 +3,6 @@ from pygame.locals import *
 
 import sgc
 
-from random import uniform
 import matplotlib.pyplot as plt
 from sgc.widgets._locals import GUI
 
@@ -55,10 +54,10 @@ class Gui:
                                     label_side="top",
                                     label_col=self.fgColor,
                                     pos=(10, 20),
-                                    min=1,
+                                    min=0,
                                     max=100,
                                     min_step=1,
-                                    max_step=99
+                                    max_step=100
                                     )
         self.mass_scale.add(0)
 
@@ -67,7 +66,7 @@ class Gui:
                                       label_side="top",
                                       label_col=self.fgColor,
                                       pos=(10, 90),
-                                      min=1,
+                                      min=0,
                                       max=100,
                                       min_step=1,
                                       max_step=99
@@ -78,7 +77,7 @@ class Gui:
                                              label_side="top",
                                              label_col=self.fgColor,
                                              pos=(10, 160),
-                                             min=1,
+                                             min=0,
                                              max=100,
                                              min_step=1,
                                              max_step=99
@@ -89,7 +88,7 @@ class Gui:
                                               label_side="top",
                                               label_col=self.fgColor,
                                               pos=(10, 230),
-                                              min=1,
+                                              min=0,
                                               max=100000,
                                               min_step=1,
                                               max_step=99999
@@ -100,7 +99,7 @@ class Gui:
                                          label_side="top",
                                          label_col=self.fgColor,
                                          pos=(10, 300),
-                                         min=1,
+                                         min=0,
                                          max=100,
                                          min_step=1,
                                          max_step=99
@@ -278,7 +277,7 @@ class Gui:
 
     def draw_point(self, pos, pxarray, color = (0, 0, 0)):
 
-        radius = 3
+        radius = param.PARTICULE_RADIUS
         (x, y) = pos
         x = int(x)
         y = int(y)
@@ -294,9 +293,7 @@ class Gui:
 
         for i in range(x - radius, x + radius + 1):
             for j in range(y - radius, y + radius + 1):
-                print(color)
                 pxarray[i, j] = color
-                # self.pxarray[i, j] = (0, 0, 0)
 
     def __del__(self):
         pygame.quit()

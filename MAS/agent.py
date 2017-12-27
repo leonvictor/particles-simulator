@@ -1,7 +1,4 @@
-from time import time
-
 from Environment.envObj import *
-from MAS.Behavior.cumulativeForcesBehavior import CumulativeForcesBehavior
 from MAS.Frustum.radiusFrustum import *
 import Parameters as param
 from scipy import constants as const
@@ -14,26 +11,27 @@ class Agent(EnvObj):
         """Temporary initialization for testing purpose"""
 
         self.behavior = behavior
-        self.initBehavior(behavior)
+        self.init_behavior(behavior)
         self.speed = np.zeros(param.DIMENSIONS)
         self.acceleration = np.zeros(param.DIMENSIONS)
 
-        self.lastPosition = self.position
-        self.expectedPosition = None
+        self.last_position = self.position
+        self.expected_position = None
 
         self.frustum = frustum
         self.frustum.agent = self
         self.entropy_class = None
+        self.kinetik_energy
         self.color = (0, 0, 0)
         #print("agent créé")
 
-    def initBehavior(self, behavior):
+    def init_behavior(self, behavior):
         behavior.agent = self
         behavior.environment = self.environment
 
     def act(self):
         if self.behavior is not None:
-            perceptions = self.environment.getPerception(self.frustum)
+            perceptions = self.environment.get_perception(self.frustum)
             if not perceptions or len(perceptions) <= 1:
                 influence = self.behavior.act(self.position, perceptions)
             else:
@@ -43,12 +41,12 @@ class Agent(EnvObj):
 
     def moved(self):
         """"Update speed and deltaTime"""
-        if self.expectedPosition is None:
-            self.expectedPosition = self.position
-        self.speed = (self.expectedPosition - self.lastPosition)
+        if self.expected_position is None:
+            self.expected_position = self.position
+        self.speed = (self.expected_position - self.last_position)
         self.speed /= param.DELTA_TIME
-        self.lastPosition = self.position
-        self.expectedPosition = None
+        self.last_position = self.position
+        self.expected_position = None
         #print("agent moved to {0}".format(self.position))
 
     def _set_position(self, new_position):
