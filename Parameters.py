@@ -11,7 +11,7 @@ class BorderMode(Enum):
 # Simulation parameters
 DIMENSIONS = 2
 NB_OCCURRENCES = 5
-NB_AGENTS = 15
+NB_AGENTS = 20
 BOX_SIZE = 600
 BORDER_MODE = BorderMode.SOLID
 DELTA_TIME = 0.05

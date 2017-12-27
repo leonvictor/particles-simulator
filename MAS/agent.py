@@ -23,7 +23,7 @@ class Agent(EnvObj):
         self.entropy_class = None
         self.kinetic_energy = 0
         self.color = (0, 0, 0)
-        self.potiential_energy = 0
+        self.potential_energy = 0
         #print("agent créé")
 
     def init_behavior(self, behavior):
@@ -100,7 +100,7 @@ class Agent(EnvObj):
         self.stiffness = stiffness
 
     def _get_energy(self):
-        return self.potiential_energy + self.kinetic_energy
+        return self.potential_energy + self.kinetic_energy
 
     position = property(_get_position, _set_position)
     mass = property(_get_mass, _set_mass)

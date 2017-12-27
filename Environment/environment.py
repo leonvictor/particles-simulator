@@ -29,16 +29,19 @@ class Environment:
         self.gas_constant = 8.3144598
         self.sequence = 0
         self.nb_border_collision = 0
+        self.friction = 0
 
-    def actualize(self, mass, charge, polarizability, dipole_moment, stiffness):
+    def actualize(self, mass, charge, polarizability, dipole_moment, stiffness, friction):
 
+        self.friction = friction * 1e-2
         for agent in self.agent_list:
             # send updated values to each agent
             agent.update_values(mass=mass,
                                 charge=charge,
                                 dipole_moment=dipole_moment,
                                 polarizability=polarizability,
-                                stiffness=stiffness)
+                                stiffness=stiffness,
+                                )
             agent.act()
 
         length = len(self.influence_list)

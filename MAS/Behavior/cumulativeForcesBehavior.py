@@ -14,7 +14,6 @@ class CumulativeForcesBehavior:
         self.agent = None
         self.lastTime = time()
         self.environment = None
-        self.friction = 1 #1 means no friction
 
     def act(self, position, perception):
 
@@ -41,10 +40,11 @@ class CumulativeForcesBehavior:
         print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
                np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
         #frotements
-        total_acceleration -= self.agent.speed / self.friction
+
+        total_acceleration -= self.environment.friction * self.agent.speed
 
         self.agent.acceleration = total_acceleration
-        self.agent.potiential_energy = np.linalg.norm(total_acceleration)
+        self.agent.potential_energy = np.linalg.norm(total_acceleration)
         dt = param.DELTA_TIME
         targetPos = self.agent.acceleration*dt*dt + self.agent.speed*dt + self.agent.position
         return Influence(self.agent, InfluenceType.MOVE, position=targetPos)

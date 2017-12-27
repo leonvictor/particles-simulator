@@ -23,14 +23,15 @@ class Gui:
 
         # initialisation dans le run
         self.env = None
-
         # Initialize sliders (and actual starting values) here
         self.current_mass_value = 1
-        self.current_charge_value = 1
-        self.current_dipole_moment = 1
-        self.current_polarizability = 1
+        self.current_charge_value = 0
+        self.current_dipole_moment = 0
+        self.current_polarizability = 0
         self.current_stiffness = 1
+        self.current_friction = 0
         self.sim_running = False
+
         self.nb_sequences = -1
 
         pygame.init()
@@ -44,7 +45,7 @@ class Gui:
         self.bgColor = (255, 255, 255)
 
         btn = sgc.Button(label="Run/Pause",
-                         pos=(10, self.info.current_h / 3 - 20)
+                         pos=(10, 440)
                          )
 
         btn.on_click = self.change_sim_state
@@ -104,7 +105,25 @@ class Gui:
                                          min_step=1,
                                          max_step=100
                                          )
-        self.stiffness_scale.add(3)
+        self.stiffness_scale.add(4)
+
+        self.friction_scale = sgc.Scale(label="Friction",
+                                        label_side="top",
+                                        label_col=self.fgColor,
+                                        pos=(10, 370),
+                                        min=0,
+                                        max=100,
+                                        min_step=1,
+                                        max_step=100
+                                        )
+        self.friction_scale.add(5)
+
+        self.mass_scale.value = self.current_mass_value
+        self.charge_scale.value = self.current_charge_value
+        self.dipole_moment_scale.value = self.current_dipole_moment
+        self.polarizability_scale.value = self.current_polarizability
+        self.stiffness_scale.value = self.current_stiffness
+        self.friction_scale.value = self.current_friction
 
         self.clock = pygame.time.Clock()
 
@@ -177,32 +196,37 @@ class Gui:
                                        charge=self.current_charge_value,
                                        polarizability=self.current_polarizability,
                                        dipole_moment=self.current_dipole_moment,
-                                       stiffness=self.current_stiffness)
+                                       stiffness=self.current_stiffness,
+                                       friction=self.current_friction)
                     if self.nb_sequences > 0:
                         self.nb_sequences -= 1
 
                 continuer, restart = self.pygame_event_managing(params is None)
                 self.pygame_display_managing()
 
-            plt.subplot(4, 2, 1)
-            self.draw_dict("Temperature", self.env.data_store.temperature)
-            plt.subplot(4, 2, 2)
-            self.draw_dict("Volume", self.env.data_store.volume)
-            plt.subplot(4, 2, 3)
-            self.draw_dict("Pressure", self.env.data_store.pressure)
-            plt.subplot(4, 2, 4)
-            self.draw_dict("Entropy", self.env.data_store.entropy)
-            plt.subplot(4, 2, 5)
-            self.draw_dict_f_dict(self.env.data_store.temperature, self.env.data_store.pressure,
-                                  "temperature", "pressure")
-            plt.subplot(4, 2, 6)
-            self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pressure,
-                                  "volume", "pressure")
-            plt.subplot(4, 2, 7)
-            self.draw_dict("Pressure (borders)", self.env.data_store.border_collision_range,
-                           name_x="Time (" + str(param.DELTA_TIME*param.RANGE_COLLISIONS_GRAPH) + " s)")
-            plt.subplot(4, 2, 8)
-            self.draw_dict("Partition function", self.env.data_store.free_energy, show=True)
+            self.plot_all()
+
+    def plot_all(self):
+        plt.subplot(4, 2, 1)
+        self.draw_dict("Temperature", self.env.data_store.temperature)
+        plt.subplot(4, 2, 2)
+        self.draw_dict("Volume", self.env.data_store.volume)
+        plt.subplot(4, 2, 3)
+        self.draw_dict("Pressure", self.env.data_store.pressure)
+        plt.subplot(4, 2, 4)
+        self.draw_dict("Entropy", self.env.data_store.entropy)
+        plt.subplot(4, 2, 5)
+        self.draw_dict_f_dict(self.env.data_store.temperature, self.env.data_store.pressure,
+                              "temperature", "pressure")
+        plt.subplot(4, 2, 6)
+        self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pressure,
+                              "volume", "pressure")
+        plt.subplot(4, 2, 7)
+        self.draw_dict("Pressure (borders)", self.env.data_store.border_collision_range,
+                       name_x="Time (" + str(param.DELTA_TIME * param.RANGE_COLLISIONS_GRAPH) + " s)")
+        plt.subplot(4, 2, 8)
+        self.draw_dict("Partition function", self.env.data_store.free_energy, show=True)
+
 
     def pygame_display_managing(self):
         time = self.clock.tick()
@@ -243,6 +267,7 @@ class Gui:
                 self.current_dipole_moment = self.dipole_moment_scale.value
                 self.current_polarizability = self.polarizability_scale.value
                 self.current_stiffness = self.stiffness_scale.value
+                self.current_friction = self.friction_scale.value
         return continuer, restart
 
     def change_sim_state(self):
