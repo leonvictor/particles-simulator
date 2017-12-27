@@ -267,30 +267,50 @@ class Environment:
         agentListCopy = list(self.agent_list)
         class_dict = {}
         index_class = 0
-        dist_moy = 0
+        dist_avg = 0
         cmpt = 0
+        dist_min_avg = 0
         while len(agentListCopy) != 0:
             agent = agentListCopy.pop()
             agent.entropy_class = index_class
             class_dict[index_class] = [agent]
             index_class += 1
+            minimum = None
             for other in agentListCopy:
                 norm = np.linalg.norm(agent.position - other.position)
-                dist_moy += norm
+                dist_avg += norm
+                if minimum is None:
+                    minimum = norm
+                else:
+                    minimum = min(minimum, norm)
                 cmpt += 1
-        dist_moy /= cmpt
-        self.data_store.dist_moy[self.sequence] = dist_moy
+            if minimum is not None:
+                dist_min_avg += minimum
+        dist_avg /= cmpt
+        dist_min_avg /= len(self.agent_list)
+        self.data_store.dist_avg[self.sequence] = dist_avg
+        self.data_store.dist_min_avg[self.sequence] = dist_min_avg
 
         #Ecart type
         agentListCopy = list(self.agent_list)
         ecart_type = 0
         cmpt = 0
+        ecart_type_min = 0
         while len(agentListCopy) != 0:
             agent = agentListCopy.pop()
+            minimum = None
             for other in agentListCopy:
                 cmpt += 1
-                ecart_type += (dist_moy - np.linalg.norm(agent.position - other.position))**2
+                norm = np.linalg.norm(agent.position - other.position)
+                ecart_type += (dist_avg - norm)**2
+                if minimum is None:
+                    minimum = norm
+                else:
+                    minimum = min(minimum, norm)
+            if minimum is not None:
+                ecart_type_min += (dist_min_avg - minimum)**2
         ecart_type = sqrt(ecart_type / cmpt)
+        ecart_type_min = sqrt(ecart_type_min / len(self.agent_list))
 
         #Classes pour l'entropie
         agentListCopy = list(self.agent_list)
@@ -298,7 +318,7 @@ class Environment:
             agent = agentListCopy.pop()
             for other in agentListCopy:
                 norm = np.linalg.norm(agent.position - other.position)
-                if norm < (dist_moy - ecart_type) \
+                if norm < (dist_min_avg + 0.1 * ecart_type_min) \
                         and agent.entropy_class != other.entropy_class:
                     new = min(agent.entropy_class, other.entropy_class)
                     old = max(agent.entropy_class, other.entropy_class)

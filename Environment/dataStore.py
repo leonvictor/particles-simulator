@@ -8,20 +8,22 @@ class DataStore:
         self.entropy = {}
         self.volume = {}
         self.pressure = {}
-        self.dist_moy = {}
+        self.dist_avg = {}
         self.border_collisions = {}
         self.partition_function = {}
         self.free_energy = {}
+        self.dist_min_avg = {}
 
     def clear(self):
         self.temperature.clear()
         self.entropy.clear()
         self.volume.clear()
         self.pressure.clear()
-        self.dist_moy.clear()
+        self.dist_avg.clear()
         self.border_collisions.clear()
         self.partition_function.clear()
         self.free_energy.clear()
+        self.dist_min_avg.clear()
 
     def _get_border_collision_range(self):
         cmpt = 0
