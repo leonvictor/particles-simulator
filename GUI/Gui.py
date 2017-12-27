@@ -166,7 +166,7 @@ class Gui:
         while restart:
             self.init_env()
             continuer = 1
-            self.env.dataStore.clear()
+            self.env.data_store.clear()
             while continuer and (self.nb_sequences != 0):
 
                 # probably better not to update values on each step
@@ -185,30 +185,30 @@ class Gui:
                 self.pygame_display_managing()
 
             plt.subplot(4, 2, 1)
-            self.draw_dict("Temperature", self.env.dataStore.temperatureList)
+            self.draw_dict("Temperature", self.env.data_store.temperature_list)
             plt.subplot(4, 2, 2)
-            self.draw_dict("Volume", self.env.dataStore.volume)
+            self.draw_dict("Volume", self.env.data_store.volume)
             plt.subplot(4, 2, 3)
-            self.draw_dict("Pression", self.env.dataStore.pression)
+            self.draw_dict("Pression", self.env.data_store.pression)
             plt.subplot(4, 2, 4)
-            self.draw_dict("Entropy", self.env.dataStore.entropyList)
+            self.draw_dict("Entropy", self.env.data_store.entropy_list)
             plt.subplot(4, 2, 5)
-            self.draw_dict_f_dict(self.env.dataStore.temperatureList, self.env.dataStore.pression,
+            self.draw_dict_f_dict(self.env.data_store.temperature_list, self.env.data_store.pression,
                                   "temperature", "pression")
             plt.subplot(4, 2, 6)
-            self.draw_dict_f_dict(self.env.dataStore.volume, self.env.dataStore.pression,
+            self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pression,
                                   "volume", "pression")
             #Ca marche pas :(
             plt.subplot(4, 2, 7)
-            self.draw_dict("Pression (particle collisions against borders)", self.env.dataStore.border_collisions, show=True)
+            self.draw_dict("Pression (particle collisions against borders)", self.env.data_store.border_collisions, show=True)
 
     def pygame_display_managing(self):
         time = self.clock.tick()
         self.screen.fill(self.bgColor)
         pxarray = pygame.PixelArray(self.screen.image)
-        for el in self.env.agentList:
+        for el in self.env.agent_list:
             self.draw_point(el.position, pxarray, el.color)
-        for el in self.env.objectList:
+        for el in self.env.object_list:
             self.draw_point(el.position, pxarray)
         del pxarray
         sgc.update(time)

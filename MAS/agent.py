@@ -21,7 +21,7 @@ class Agent(EnvObj):
         self.frustum = frustum
         self.frustum.agent = self
         self.entropy_class = None
-        self.kinetik_energy
+        self.kinetic_energy = 0
         self.color = (0, 0, 0)
         #print("agent créé")
 
@@ -40,11 +40,12 @@ class Agent(EnvObj):
             self.environment.add_influence(influence)
 
     def moved(self):
-        """"Update speed and deltaTime"""
+        """"Update speed and delta_time"""
         if self.expected_position is None:
             self.expected_position = self.position
         self.speed = (self.expected_position - self.last_position)
         self.speed /= param.DELTA_TIME
+        self.kinetic_energy = 0.5 * self.mass * (self.speed ** 2)
         self.last_position = self.position
         self.expected_position = None
         #print("agent moved to {0}".format(self.position))

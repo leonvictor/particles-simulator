@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from ast import literal_eval as make_tuple
 
+
 class EnvGrid:
 
     path = os.getcwd() + "\\csv\\stat_data\\"
@@ -12,95 +13,95 @@ class EnvGrid:
         self.side = side
         self.grid = {}
 
-    def add(self, envObj):
-        grid_pos = envObj.position//self.side
-        grid_pos = EnvGrid.totuple(grid_pos)
-        envObj.gridPos = grid_pos
-        envObj.envGrid = self
+    def add(self, env_obj):
+        grid_pos = env_obj.position // self.side
+        grid_pos = EnvGrid.to_tuple(grid_pos)
+        env_obj.gridPos = grid_pos
+        env_obj.envGrid = self
 
         if grid_pos in self.grid.keys():
-            self.grid[grid_pos].append(envObj)
+            self.grid[grid_pos].append(env_obj)
         else:
-            self.grid[grid_pos] = [envObj]
+            self.grid[grid_pos] = [env_obj]
 
-    def remove(self, envObj):
-        self.grid[envObj.gridPos].remove(envObj)
-        if len(self.grid[envObj.gridPos]) == 0:
-            del self.grid[envObj.gridPos]
+    def remove(self, env_obj):
+        self.grid[env_obj.gridPos].remove(env_obj)
+        if len(self.grid[env_obj.gridPos]) == 0:
+            del self.grid[env_obj.gridPos]
 
-        envObj.envGrid = None
+        env_obj.envGrid = None
 
-    def moved(self, envObj):
-        grid_pos = envObj.position // self.side
-        grid_pos = EnvGrid.totuple(grid_pos)
+    def moved(self, env_obj):
+        grid_pos = env_obj.position // self.side
+        grid_pos = EnvGrid.to_tuple(grid_pos)
 
-        if grid_pos != envObj.gridPos:
-            self.remove(envObj)
-            self.add(envObj)
+        if grid_pos != env_obj.gridPos:
+            self.remove(env_obj)
+            self.add(env_obj)
 
-    def getBounds(self):
+    def get_bounds(self):
 
-        boundsMin = list(list(self.grid.keys())[0])
-        boundsMax = list(boundsMin)
-        boundsAgentMin = list(self.grid[list(self.grid.keys())[0]][0].position)
-        boundsAgentMax = list(boundsAgentMin)
+        bounds_min = list(list(self.grid.keys())[0])
+        bounds_max = list(bounds_min)
+        bounds_agent_min = list(self.grid[list(self.grid.keys())[0]][0].position)
+        bounds_agent_max = list(bounds_agent_min)
 
         for pos in self.grid.keys():
             for i in range(len(pos)):
-                if boundsMax[i] <= pos[i]:
-                    boundsMax[i] = pos[i]
+                if bounds_max[i] <= pos[i]:
+                    bounds_max[i] = pos[i]
                     for agent in self.grid[pos]:
-                        if agent.position[i] > boundsAgentMax[i]:
-                            boundsAgentMax[i] = agent.position[i]
-                if boundsMin[i] >= pos[i]:
-                    boundsMin[i] = pos[i]
+                        if agent.position[i] > bounds_agent_max[i]:
+                            bounds_agent_max[i] = agent.position[i]
+                if bounds_min[i] >= pos[i]:
+                    bounds_min[i] = pos[i]
                     for agent in self.grid[pos]:
-                        if agent.position[i] < boundsAgentMin[i]:
-                            boundsAgentMin[i] = agent.position[i]
+                        if agent.position[i] < bounds_agent_min[i]:
+                            bounds_agent_min[i] = agent.position[i]
 
-        print((boundsAgentMin, boundsAgentMax))
-        return boundsAgentMin, boundsAgentMax
+        print((bounds_agent_min, bounds_agent_max))
+        return bounds_agent_min, bounds_agent_max
 
     @staticmethod
-    def totuple(a):
+    def to_tuple(a):
         try:
-            return tuple(EnvGrid.totuple(i) for i in a)
+            return tuple(EnvGrid.to_tuple(i) for i in a)
         except TypeError:
             return a
 
-    def getListFromRank(self, gridPos, rank):
-        list = self.buildList(gridPos, rank, len(gridPos),0)
-        tupleList = EnvGrid.totuple(list)
+    def get_list_from_rank(self, grid_pos, rank):
+        l = self.build_list(grid_pos, rank, len(grid_pos), 0)
+        tuple_list = EnvGrid.to_tuple(l)
         result = []
-        for i in tupleList:
+        for i in tuple_list:
             if i in self.grid.keys():
                 result.extend(self.grid[i])
         return result
 
-    def buildList(self, gridPos, rank, leng, i):
-        if i == leng:
-            return gridPos
-        listBase = []
+    def build_list(self, grid_pos, rank, lenght, i):
+        if i == lenght:
+            return grid_pos
+        list_base = []
         for cmpt in range(0, i):
-                listBase.append(gridPos[cmpt])
-        listOfLists = []
-        for j in range(int(gridPos[i]-rank), int(gridPos[i]+rank+1)):
-            listBaseCopy = list(listBase)
-            listBaseCopy.append(j)
-            m = leng - (len(listBaseCopy))
+                list_base.append(grid_pos[cmpt])
+        list_of_lists = []
+        for j in range(int(grid_pos[i] - rank), int(grid_pos[i] + rank + 1)):
+            list_base_copy = list(list_base)
+            list_base_copy.append(j)
+            m = lenght - (len(list_base_copy))
             for k in range(0, m):
-                listBaseCopy.append(0)
-            listOfLists.append(listBaseCopy)
-        if i + 1 == leng:
-            return listOfLists
+                list_base_copy.append(0)
+            list_of_lists.append(list_base_copy)
+        if i + 1 == lenght:
+            return list_of_lists
         result = []
-        for el in listOfLists:
-            result.extend(self.buildList(el, rank, leng, i+1))
+        for el in list_of_lists:
+            result.extend(self.build_list(el, rank, lenght, i + 1))
         return result
 
     def save(self, name):
 
-        fieldnames = ['case, nb_agents']
+        field_names = ['case, nb_agents']
 
         data = []
 
@@ -114,15 +115,15 @@ class EnvGrid:
         while Path(EnvGrid.path + name + str(cmpt) + EnvGrid.extension).is_file():
             cmpt += 1
 
-        EnvGrid.WriteListToCSV(self.path + name + str(cmpt) + self.extension, fieldnames, data)
+        EnvGrid.write_list_to_csv(self.path + name + str(cmpt) + self.extension, field_names, data)
 
     @staticmethod
     def load(name):
-        datalist = EnvGrid.ReadCSVasList( EnvGrid.path + name)
+        data_list = EnvGrid.read_csv_as_list(EnvGrid.path + name)
 
         result = {}
 
-        for item in datalist:
+        for item in data_list:
             if len(item) != 2:
                 continue
 
@@ -131,7 +132,7 @@ class EnvGrid:
         return result
 
     @staticmethod
-    def WriteListToCSV(csv_file, csv_columns, data_list):
+    def write_list_to_csv(csv_file, csv_columns, data_list):
 
         with open(csv_file, 'w') as csvfile:
             writer = csv.writer(csvfile, dialect='excel', quoting=csv.QUOTE_NONNUMERIC)
@@ -140,7 +141,7 @@ class EnvGrid:
                 writer.writerow(data)
 
     @staticmethod
-    def ReadCSVasList(csv_file):
+    def read_csv_as_list(csv_file):
         with open(csv_file) as csvfile:
             reader = csv.reader(csvfile, dialect='excel', quoting=csv.QUOTE_NONNUMERIC)
             datalist = list(reader)

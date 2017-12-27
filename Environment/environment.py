@@ -14,25 +14,25 @@ class Environment:
     BOX_SIZE = param.BOX_SIZE
 
     def __init__(self):
-        self.agentList = []
-        self.objectList = []
-        self.treeDepth = 0
-        self.envGrid = EnvGrid(param.GRID_SIZE)
-        self.influenceList = []
+        self.agent_list = []
+        self.object_list = []
+        self.tree_depth = 0
+        self.env_grid = EnvGrid(param.GRID_SIZE)
+        self.influence_list = []
         """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
         self.relative_permittivity = 1.0006
         # mise à jour du temps
-        self.deltaTime = param.TIME_STEP
-        self.lastCallTime = time()
-        self.dataStore = DataStore()
-        self.startingTime = self.lastCallTime
-        self.gasConstant = 8.3144598
+        self.delta_time = param.TIME_STEP
+        self.last_call_time = time()
+        self.data_store = DataStore()
+        self.starting_time = self.last_call_time
+        self.gas_constant = 8.3144598
         self.sequence = 0
         self.nb_border_collision = 0
 
     def actualize(self, mass, charge, polarizability, dipole_moment, stiffness):
 
-        for agent in self.agentList:
+        for agent in self.agent_list:
             # send updated values to each agent
             agent.update_values(mass=mass,
                                 charge=charge,
@@ -41,21 +41,21 @@ class Environment:
                                 stiffness=stiffness)
             agent.act()
 
-        length = len(self.influenceList)
+        length = len(self.influence_list)
         avrSpeed = 0
         self.nb_border_collision = 0
         for i in range(length):
-            influence = self.influenceList.pop()
+            influence = self.influence_list.pop()
             influence = self.filter_influence(influence)
             self.apply(influence)
             avrSpeed += np.linalg.norm(influence.agent.speed) * influence.agent.molar_mass
         avrSpeed /= length
 
-        self.dataStore.temperatureList[self.sequence] = avrSpeed / (3 * self.gasConstant)
+        self.data_store.temperature_list[self.sequence] = avrSpeed / (3 * self.gas_constant)
 
         #name = (str(mass) + "_" + str(charge) + "_" + str(polarizability) +
         #        "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
-        #self.envGrid.save(name)
+        #self.env_grid.save(name)
         #self.compute_entropy(name)
         self.compute_social_entropy()
         self.compute_volume()
@@ -68,9 +68,9 @@ class Environment:
         agentPerception = []
 
         agentListToCheck = []
-        maxRank = ceil(frustum.radius / self.envGrid.side)
+        maxRank = ceil(frustum.radius / self.env_grid.side)
 
-        agentListToCheck = self.envGrid.getListFromRank(frustum.agent.gridPos, maxRank)
+        agentListToCheck = self.env_grid.get_list_from_rank(frustum.agent.gridPos, maxRank)
 
         return agentListToCheck
 
@@ -82,10 +82,10 @@ class Environment:
         return agentPerception
 
     def add_influence(self, influence):
-        self.influenceList.append(influence)
+        self.influence_list.append(influence)
 
     def filter_influence(self, influence):
-        # for i in self.influenceList:
+        # for i in self.influence_list:
 
         if param.BORDER_MODE is param.BorderMode.DONUT:
             out_of_border = False
@@ -135,8 +135,8 @@ class Environment:
 
     def add_agent(self):
         new_agent = Agent(self, RadiusFrustum(param.PERCEPTION_RADIUS), CumulativeForcesBehavior())
-        self.agentList.append(new_agent)
-        self.envGrid.add(new_agent)
+        self.agent_list.append(new_agent)
+        self.env_grid.add(new_agent)
 
     @staticmethod
     def get_probability_grid_all(ranges_list_input, max_sequence):
@@ -231,23 +231,23 @@ class Environment:
             entropy += pi * log(pi)
         entropy = - entropy / log(len(data) + 10e-10)
 
-        self.dataStore.entropyList[self.sequence] = entropy
+        self.data_store.entropy_list[self.sequence] = entropy
 
     def compute_volume(self):
-        min, max = self.envGrid.getBounds()
+        min, max = self.env_grid.get_bounds()
         res = np.empty(param.DIMENSIONS)
         for i in range(len(min)):
             res[i] = max[i] - min[i]
         volume = 1
         for l in res:
             volume *= l
-        self.dataStore.volume[self.sequence] = volume
+        self.data_store.volume[self.sequence] = volume
 
     def compute_pressure(self):
         R = 8.314
-        n = len(self.agentList) / scipy.constants.N_A
-        V = self.dataStore.volume[self.sequence]
-        T = self.dataStore.temperatureList[self.sequence]
+        n = len(self.agent_list) / scipy.constants.N_A
+        V = self.data_store.volume[self.sequence]
+        T = self.data_store.temperature_list[self.sequence]
         # Pc = 1
         # Tc = 1
         # a = 27*R*R*Tc*Tc/(64*Pc)
@@ -258,12 +258,12 @@ class Environment:
         # empirical Waals equation
         P = ((n * R * T) / (V - n * b)) - (n * n * a / V * V)
 
-        self.dataStore.pression[self.sequence] = P
+        self.data_store.pression[self.sequence] = P
 
     def compute_social_entropy(self):
 
         #Moyenne et classes par défaut
-        agentListCopy = list(self.agentList)
+        agentListCopy = list(self.agent_list)
         class_dict = {}
         index_class = 0
         dist_moy = 0
@@ -278,10 +278,10 @@ class Environment:
                 dist_moy += norm
                 cmpt += 1
         dist_moy /= cmpt
-        self.dataStore.dist_moy[self.sequence] = dist_moy
+        self.data_store.dist_moy[self.sequence] = dist_moy
 
         #Ecart type
-        agentListCopy = list(self.agentList)
+        agentListCopy = list(self.agent_list)
         ecart_type = 0
         cmpt = 0
         while len(agentListCopy) != 0:
@@ -292,7 +292,7 @@ class Environment:
         ecart_type = sqrt(ecart_type / cmpt)
 
         #Classes pour l'entropie
-        agentListCopy = list(self.agentList)
+        agentListCopy = list(self.agent_list)
         while len(agentListCopy) != 0:
             agent = agentListCopy.pop()
             for other in agentListCopy:
@@ -311,16 +311,16 @@ class Environment:
         #entropie
         entropy = 0
         for key in class_dict.keys():
-            pi = len(class_dict[key])/len(self.agentList)
+            pi = len(class_dict[key])/len(self.agent_list)
             entropy += pi * log(pi)
-        entropy = - entropy / log(len(self.agentList))
-        self.dataStore.entropyList[self.sequence] = entropy
+        entropy = - entropy / log(len(self.agent_list))
+        self.data_store.entropy_list[self.sequence] = entropy
 
         #Couleur des classes en fonction de la classe
         keylist = class_dict.keys()
-        for agent in self.agentList:
+        for agent in self.agent_list:
             index = list(keylist).index(agent.entropy_class)
             agent.color = (int(index * 255/len(class_dict)), int(255-index * 255/len(class_dict)), int(255-index * 255/len(class_dict)))
 
     def compute_border_collisions(self):
-        self.dataStore.border_collisions[self.sequence] = self.nb_border_collision
+        self.data_store.border_collisions[self.sequence] = self.nb_border_collision
