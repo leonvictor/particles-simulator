@@ -306,9 +306,6 @@ class Environment:
                     for a in class_dict[old]:
                         a.entropy_class = new
                     del class_dict[old]
-
-        print(len(class_dict))
-
         #entropie
         entropy = 0
         for key in class_dict.keys():
@@ -334,3 +331,4 @@ class Environment:
             partition_function += exp(-1*(thermodynamic_beta * agent.energy))
 
         self.data_store.partition_function[self.sequence] = partition_function
+        self.data_store.free_energy[self.sequence] = -log(partition_function+1e-100)

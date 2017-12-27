@@ -38,8 +38,8 @@ class CumulativeForcesBehavior:
         if param.WAALS:
             total_acceleration += vdw_forces
 
-        # print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
-        #        np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
+        print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
+               np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
         #frotements
         total_acceleration -= self.agent.speed / self.friction
 

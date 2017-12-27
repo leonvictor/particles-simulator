@@ -6,11 +6,6 @@ import Parameters as param
 class ForcesComputation :
 
     k = 1 / 4 * scipy.constants.pi * scipy.constants.epsilon_0
-    spring_length = param.SPRING_LENGTH
-    coulomb_factor = param.COULOMB_FACTOR
-    waals_factor = param.WAALS_FACTOR
-    gravity_factor = param.GRAVITY_FACTOR
-    spring_factor = param.SPRING_FACTOR
 
     @staticmethod
     def gravity(agent, perceptions):
@@ -26,7 +21,7 @@ class ForcesComputation :
                 gravity = scipy.constants.G * ((agent.mass * p.mass)
                                                / (norm ** 2))
 
-                gravity = gravity * 10e2
+                gravity = gravity * param.GRAVITY_FACTOR
                 unit_vector = (-agent.position+p.position)/norm
                 interactions.append(gravity * unit_vector)
 
@@ -55,7 +50,7 @@ class ForcesComputation :
                                4 * const.pi * const.epsilon_0)**2)
                 vdw = (- 1/(norm**6)) \
                       * (e_keesom + e_debye + e_london)
-                vdw = vdw * ForcesComputation.waals_factor
+                vdw = vdw * param.WAALS_FACTOR
                 unit_vector = (agent.position - p.position) / norm
                 interactions.append(vdw * unit_vector)
         return np.sum(interactions,axis=0)
@@ -74,7 +69,7 @@ class ForcesComputation :
                 coulomb = ForcesComputation.k * np.absolute(agent.charge * p.charge) /\
                           (norm ** 2)
                 #repulsive force : the vector is away from p
-                coulomb *= ForcesComputation.coulomb_factor
+                coulomb *= param.COULOMB_FACTOR
                 unit_vector = (-p.position + agent.position) / norm
                 interactions.append(coulomb * unit_vector)
             else:
@@ -93,8 +88,8 @@ class ForcesComputation :
             """this is necessary for not but shouldn't happen anyway"""
             # if p.position.all != agent.position.all:
             if norm != 0:
-                spring = - agent.stiffness * (norm - ForcesComputation.spring_length)
-                spring *= ForcesComputation.spring_factor
+                spring = - agent.stiffness * (norm - param.SPRING_LENGTH)
+                spring *= param.SPRING_FACTOR
                 unit_vector = (agent.position-p.position)/norm
                 interactions.append(spring * unit_vector)
 

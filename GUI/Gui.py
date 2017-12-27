@@ -54,10 +54,10 @@ class Gui:
                                     label_side="top",
                                     label_col=self.fgColor,
                                     pos=(10, 20),
-                                    min=0,
+                                    min=1,
                                     max=100,
                                     min_step=1,
-                                    max_step=100
+                                    max_step=99
                                     )
         self.mass_scale.add(0)
 
@@ -69,7 +69,7 @@ class Gui:
                                       min=0,
                                       max=100,
                                       min_step=1,
-                                      max_step=99
+                                      max_step=100
                                       )
         self.charge_scale.add(1)
 
@@ -80,7 +80,7 @@ class Gui:
                                              min=0,
                                              max=100,
                                              min_step=1,
-                                             max_step=99
+                                             max_step=100
                                              )
         self.dipole_moment_scale.add(2)
 
@@ -102,7 +102,7 @@ class Gui:
                                          min=0,
                                          max=100,
                                          min_step=1,
-                                         max_step=99
+                                         max_step=100
                                          )
         self.stiffness_scale.add(3)
 
@@ -198,11 +198,11 @@ class Gui:
             plt.subplot(4, 2, 6)
             self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pressure,
                                   "volume", "pressure")
-            #Ca marche pas :(
             plt.subplot(4, 2, 7)
-            self.draw_dict("Pressure (borders)", self.env.data_store.border_collisions)
+            self.draw_dict("Pressure (borders)", self.env.data_store.border_collision_range,
+                           name_x="Time (" + str(param.DELTA_TIME*param.RANGE_COLLISIONS_GRAPH) + " s)")
             plt.subplot(4, 2, 8)
-            self.draw_dict("Partition function", self.env.data_store.partition_function, show=True)
+            self.draw_dict("Partition function", self.env.data_store.free_energy, show=True)
 
     def pygame_display_managing(self):
         time = self.clock.tick()
