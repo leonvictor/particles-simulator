@@ -1,7 +1,7 @@
 from Environment.dataStore import *
 from MAS.Behavior.cumulativeForcesBehavior import *
 from MAS.agent import *
-from math import ceil, log, sqrt
+from math import ceil, log, sqrt, exp
 from Environment.envGrid import *
 import numpy as np
 import Parameters as param
@@ -51,7 +51,7 @@ class Environment:
             avrSpeed += np.linalg.norm(influence.agent.speed) * influence.agent.molar_mass
         avrSpeed /= length
 
-        self.data_store.temperature_list[self.sequence] = avrSpeed / (3 * self.gas_constant)
+        self.data_store.temperature[self.sequence] = avrSpeed / (3 * self.gas_constant)
 
         #name = (str(mass) + "_" + str(charge) + "_" + str(polarizability) +
         #        "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
@@ -61,6 +61,7 @@ class Environment:
         self.compute_volume()
         self.compute_pressure()
         self.compute_border_collisions()
+        self.compute_partition_function()
         self.sequence += 1
 
     def get_perception(self, frustum):
@@ -231,7 +232,7 @@ class Environment:
             entropy += pi * log(pi)
         entropy = - entropy / log(len(data) + 10e-10)
 
-        self.data_store.entropy_list[self.sequence] = entropy
+        self.data_store.entropy[self.sequence] = entropy
 
     def compute_volume(self):
         min, max = self.env_grid.get_bounds()
@@ -247,7 +248,7 @@ class Environment:
         R = 8.314
         n = len(self.agent_list) / scipy.constants.N_A
         V = self.data_store.volume[self.sequence]
-        T = self.data_store.temperature_list[self.sequence]
+        T = self.data_store.temperature[self.sequence]
         # Pc = 1
         # Tc = 1
         # a = 27*R*R*Tc*Tc/(64*Pc)
@@ -258,7 +259,7 @@ class Environment:
         # empirical Waals equation
         P = ((n * R * T) / (V - n * b)) - (n * n * a / V * V)
 
-        self.data_store.pression[self.sequence] = P
+        self.data_store.pressure[self.sequence] = P
 
     def compute_social_entropy(self):
 
@@ -314,7 +315,7 @@ class Environment:
             pi = len(class_dict[key])/len(self.agent_list)
             entropy += pi * log(pi)
         entropy = - entropy / log(len(self.agent_list))
-        self.data_store.entropy_list[self.sequence] = entropy
+        self.data_store.entropy[self.sequence] = entropy
 
         #Couleur des classes en fonction de la classe
         keylist = class_dict.keys()
@@ -324,3 +325,12 @@ class Environment:
 
     def compute_border_collisions(self):
         self.data_store.border_collisions[self.sequence] = self.nb_border_collision
+
+    def compute_partition_function(self):
+        partition_function = 0
+        thermodynamic_beta = 1/(const.Boltzmann * self.data_store.temperature[self.sequence])
+
+        for agent in self.agent_list:
+            partition_function += exp(-1*(thermodynamic_beta * agent.energy))
+
+        self.data_store.partition_function[self.sequence] = partition_function

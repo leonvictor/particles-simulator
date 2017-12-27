@@ -23,6 +23,7 @@ class Agent(EnvObj):
         self.entropy_class = None
         self.kinetic_energy = 0
         self.color = (0, 0, 0)
+        self.potiential_energy = 0
         #print("agent créé")
 
     def init_behavior(self, behavior):
@@ -45,7 +46,7 @@ class Agent(EnvObj):
             self.expected_position = self.position
         self.speed = (self.expected_position - self.last_position)
         self.speed /= param.DELTA_TIME
-        self.kinetic_energy = 0.5 * self.mass * (self.speed ** 2)
+        self.kinetic_energy = 0.5 * self.mass * (np.linalg.norm(self.speed) ** 2)
         self.last_position = self.position
         self.expected_position = None
         #print("agent moved to {0}".format(self.position))
@@ -60,8 +61,8 @@ class Agent(EnvObj):
     def _set_mass(self, new_mass):
         # for realistic values
         # self._mass = const.pico * new_mass
-        self._mass = new_mass * 1e4
-        self.molar_mass = new_mass * 1e4 * const.Avogadro
+        self._mass = new_mass
+        self.molar_mass = new_mass * const.Avogadro
 
     def _get_mass(self):
         return self._mass
@@ -98,9 +99,13 @@ class Agent(EnvObj):
         self.polarizability = polarizability
         self.stiffness = stiffness
 
+    def _get_energy(self):
+        return self.potiential_energy + self.kinetic_energy
+
     position = property(_get_position, _set_position)
     mass = property(_get_mass, _set_mass)
     charge = property(_get_charge, _set_charge)
     polarizability = property(_get_polarizability, _set_polarizability)
     dipole_moment = property(_get_dipole_moment, _set_dipole_moment)
     stiffness = property(_get_stiffness, _set_stiffness)
+    energy = property(_get_energy)

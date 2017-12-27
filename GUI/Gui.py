@@ -185,22 +185,24 @@ class Gui:
                 self.pygame_display_managing()
 
             plt.subplot(4, 2, 1)
-            self.draw_dict("Temperature", self.env.data_store.temperature_list)
+            self.draw_dict("Temperature", self.env.data_store.temperature)
             plt.subplot(4, 2, 2)
             self.draw_dict("Volume", self.env.data_store.volume)
             plt.subplot(4, 2, 3)
-            self.draw_dict("Pression", self.env.data_store.pression)
+            self.draw_dict("Pressure", self.env.data_store.pressure)
             plt.subplot(4, 2, 4)
-            self.draw_dict("Entropy", self.env.data_store.entropy_list)
+            self.draw_dict("Entropy", self.env.data_store.entropy)
             plt.subplot(4, 2, 5)
-            self.draw_dict_f_dict(self.env.data_store.temperature_list, self.env.data_store.pression,
-                                  "temperature", "pression")
+            self.draw_dict_f_dict(self.env.data_store.temperature, self.env.data_store.pressure,
+                                  "temperature", "pressure")
             plt.subplot(4, 2, 6)
-            self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pression,
-                                  "volume", "pression")
+            self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pressure,
+                                  "volume", "pressure")
             #Ca marche pas :(
             plt.subplot(4, 2, 7)
-            self.draw_dict("Pression (particle collisions against borders)", self.env.data_store.border_collisions, show=True)
+            self.draw_dict("Pressure (borders)", self.env.data_store.border_collisions)
+            plt.subplot(4, 2, 8)
+            self.draw_dict("Partition function", self.env.data_store.partition_function, show=True)
 
     def pygame_display_managing(self):
         time = self.clock.tick()

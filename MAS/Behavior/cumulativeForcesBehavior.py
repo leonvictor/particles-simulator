@@ -38,12 +38,13 @@ class CumulativeForcesBehavior:
         if param.WAALS:
             total_acceleration += vdw_forces
 
-        print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
-               np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
-        #frotements pour le rendu visuel
+        # print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
+        #        np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
+        #frotements
         total_acceleration -= self.agent.speed / self.friction
 
         self.agent.acceleration = total_acceleration
+        self.agent.potiential_energy = np.linalg.norm(total_acceleration)
         dt = param.DELTA_TIME
         targetPos = self.agent.acceleration*dt*dt + self.agent.speed*dt + self.agent.position
         return Influence(self.agent, InfluenceType.MOVE, position=targetPos)
