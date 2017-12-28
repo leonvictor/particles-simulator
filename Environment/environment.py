@@ -1,5 +1,6 @@
 from Environment.dataStore import *
 from MAS.Behavior.cumulativeForcesBehavior import *
+from MAS.Behavior.randomBehavior import *
 from MAS.agent import *
 from math import ceil, log, sqrt, exp
 from Environment.envGrid import *
@@ -21,8 +22,6 @@ class Environment:
         self.influence_list = []
         """La permittivité relative dépend du milieu : 1 pour le vide, 1,0006 pour l'air"""
         self.relative_permittivity = 1.0006
-        # mise à jour du temps
-        self.delta_time = param.TIME_STEP
         self.last_call_time = time()
         self.data_store = DataStore()
         self.starting_time = self.last_call_time
@@ -137,8 +136,10 @@ class Environment:
         if influence.type == InfluenceType.MOVE:
             influence.agent.position = influence.position
 
-    def add_agent(self):
-        new_agent = Agent(self, RadiusFrustum(param.PERCEPTION_RADIUS), CumulativeForcesBehavior())
+    def add_agent(self, cumulative=True):
+        behavior = CumulativeForcesBehavior() if cumulative else RandomBehavior()
+
+        new_agent = Agent(self, RadiusFrustum(param.PERCEPTION_RADIUS), behavior)
         self.agent_list.append(new_agent)
         self.env_grid.add(new_agent)
 

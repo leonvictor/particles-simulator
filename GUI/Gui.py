@@ -18,19 +18,22 @@ class Gui:
         self.env = Environment()
         for i in range(param.NB_AGENTS):
             self.env.add_agent()
+        for i in range(param.NB_RANDOM_AGENTS):
+            self.env.add_agent(False)
+
 
     def __init__(self):
 
         # initialisation dans le run
         self.env = None
         # Initialize sliders (and actual starting values) here
-        self.current_mass_value = 1
-        self.current_charge_value = 0
-        self.current_dipole_moment = 0
-        self.current_polarizability = 0
-        self.current_stiffness = 1
-        self.current_friction = 0
-        self.sim_running = False
+        self.current_mass_value = param.STARTING_MASS_VALUE
+        self.current_charge_value = param.STARTING_CHARGE_VALUE
+        self.current_dipole_moment = param.STARTING_DIPOLE_MOMENT
+        self.current_polarizability = param.STARTING_POLARIZABILITY
+        self.current_stiffness = param.STARTING_STIFFNESS
+        self.current_friction = param.STARTING_FRICTION
+        self.sim_running = param.STARTING_SIM_RUNNING
 
         self.nb_sequences = -1
 
@@ -204,7 +207,8 @@ class Gui:
                 continuer, restart = self.pygame_event_managing(params is None)
                 self.pygame_display_managing()
 
-            self.plot_all()
+            if param.DRAW_GRAPHS:
+                self.plot_all()
 
     def plot_all(self):
         plt.subplot(4, 2, 1)
@@ -225,7 +229,7 @@ class Gui:
         self.draw_dict("Pressure (borders)", self.env.data_store.border_collision_range,
                        name_x="Time (" + str(param.DELTA_TIME * param.RANGE_COLLISIONS_GRAPH) + " s)")
         plt.subplot(4, 2, 8)
-        self.draw_dict("Partition function", self.env.data_store.free_energy, show=True)
+        self.draw_dict("Free energy", self.env.data_store.free_energy, show=True)
 
 
     def pygame_display_managing(self):
@@ -276,7 +280,7 @@ class Gui:
     def draw_dict(self, name, dict, name_x=None, show=False):
         if len(dict) != 0:
             plt.plot(list(dict.keys()), dict.values())
-            plt.title(name + " evolution")
+            #plt.title(name + " evolution")
             if name_x is None:
                 plt.xlabel("Time (" + str(param.DELTA_TIME) + " s)")
             else:

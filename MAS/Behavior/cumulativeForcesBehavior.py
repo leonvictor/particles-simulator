@@ -15,7 +15,7 @@ class CumulativeForcesBehavior:
         self.lastTime = time()
         self.environment = None
 
-    def act(self, position, perception):
+    def act(self, perception):
 
         gravity_forces = ForcesComputation.gravity(self.agent, perception)
         coulomb_forces = ForcesComputation.coulomb(self.agent, perception)
@@ -37,8 +37,8 @@ class CumulativeForcesBehavior:
         if param.WAALS:
             total_acceleration += vdw_forces
 
-        print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
-               np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
+        # print((np.linalg.norm(gravity_forces), np.linalg.norm(coulomb_forces),
+        #        np.linalg.norm(vdw_forces), np.linalg.norm(spring_forces)))
         #frotements
 
         total_acceleration -= self.environment.friction * self.agent.speed

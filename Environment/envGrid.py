@@ -59,7 +59,6 @@ class EnvGrid:
                         if agent.position[i] < bounds_agent_min[i]:
                             bounds_agent_min[i] = agent.position[i]
 
-        print((bounds_agent_min, bounds_agent_max))
         return bounds_agent_min, bounds_agent_max
 
     @staticmethod

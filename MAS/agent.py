@@ -33,10 +33,7 @@ class Agent(EnvObj):
     def act(self):
         if self.behavior is not None:
             perceptions = self.environment.get_perception(self.frustum)
-            if not perceptions or len(perceptions) <= 1:
-                influence = self.behavior.act(self.position, perceptions)
-            else:
-                influence = self.behavior.act(self.position, perceptions)
+            influence = self.behavior.act(perceptions)
             influence.agent = self
             self.environment.add_influence(influence)
 
