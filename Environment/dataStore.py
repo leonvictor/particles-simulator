@@ -11,8 +11,12 @@ class DataStore:
         self.dist_avg = {}
         self.border_collisions = {}
         self.partition_function = {}
+        self.thermodynamic_energy = {}
         self.free_energy = {}
         self.dist_min_avg = {}
+        self.internal_energy = {}
+        self.enthalpy = {}
+        self.free_enthalpy = {}
 
     def clear(self):
         self.temperature.clear()
@@ -22,8 +26,12 @@ class DataStore:
         self.dist_avg.clear()
         self.border_collisions.clear()
         self.partition_function.clear()
+        self.thermodynamic_energy.clear()
         self.free_energy.clear()
         self.dist_min_avg.clear()
+        self.internal_energy.clear()
+        self.enthalpy.clear()
+        self.free_enthalpy.clear()
 
     def _get_border_collision_range(self):
         cmpt = 0

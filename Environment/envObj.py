@@ -9,7 +9,7 @@ class EnvObj:
     def __init__(self, environment):
         """self._position = Vector(*((0.0,)*environment.dimension))"""
         """create an array and populate it with random numbers between 0 and 1"""
-        self._position = np.random.uniform(-Parameters.BOX_SIZE/2, Parameters.BOX_SIZE/2, Parameters.DIMENSIONS)
+        self._position = np.random.uniform(-Parameters.BOX_SIZE / 2, Parameters.BOX_SIZE / 2, Parameters.DIMENSION)
         self.gridPos = None
         self.envGrid = None
         self.environment = environment

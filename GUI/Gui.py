@@ -211,25 +211,34 @@ class Gui:
                 self.plot_all()
 
     def plot_all(self):
-        plt.subplot(4, 2, 1)
+        plt.subplot(3, 2, 1)
         self.draw_dict("Temperature", self.env.data_store.temperature)
-        plt.subplot(4, 2, 2)
+        plt.subplot(3, 2, 2)
         self.draw_dict("Volume", self.env.data_store.volume)
-        plt.subplot(4, 2, 3)
+        plt.subplot(3, 2, 3)
         self.draw_dict("Pressure", self.env.data_store.pressure)
-        plt.subplot(4, 2, 4)
+        plt.subplot(3, 2, 4)
         self.draw_dict("Entropy", self.env.data_store.entropy)
-        plt.subplot(4, 2, 5)
+        plt.subplot(3, 2, 5)
         self.draw_dict_f_dict(self.env.data_store.temperature, self.env.data_store.pressure,
                               "temperature", "pressure")
-        plt.subplot(4, 2, 6)
+        plt.subplot(3, 2, 6)
         self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pressure,
-                              "volume", "pressure")
-        plt.subplot(4, 2, 7)
+                              "volume", "pressure", show=True)
+        plt.subplot(3, 2, 1)
         self.draw_dict("Pressure (borders)", self.env.data_store.border_collision_range,
                        name_x="Time (" + str(param.DELTA_TIME * param.RANGE_COLLISIONS_GRAPH) + " s)")
-        plt.subplot(4, 2, 8)
-        self.draw_dict("Free energy", self.env.data_store.free_energy, show=True)
+        plt.subplot(3, 2, 2)
+        self.draw_dict("Thermodynamic energy", self.env.data_store.thermodynamic_energy)
+        plt.subplot(3, 2, 3)
+        self.draw_dict("Average min dist", self.env.data_store.dist_min_avg)
+        plt.subplot(3, 2, 4)
+        self.draw_dict("Enthalpy", self.env.data_store.enthalpy)
+        plt.subplot(3, 2, 5)
+        self.draw_dict("Free Enthalpy", self.env.data_store.free_enthalpy)
+        plt.subplot(3, 2, 6)
+        self.draw_dict("Free Energy", self.env.data_store.free_energy, show=True)
+
 
 
     def pygame_display_managing(self):
@@ -237,7 +246,7 @@ class Gui:
         self.screen.fill(self.bgColor)
         pxarray = pygame.PixelArray(self.screen.image)
         for el in self.env.agent_list:
-            self.draw_point(el.position, pxarray, el.color)
+            self.draw_point(el.position, pxarray, el.get_color())
         for el in self.env.object_list:
             self.draw_point(el.position, pxarray)
         del pxarray
@@ -320,7 +329,8 @@ class Gui:
         x += self.dw
         y += self.dh
 
-        # pygame.draw.circle(self.fenetre, self.fgColor, (x,y), radius)
+        if param.DRAW_PERCEPTION_RADIUS:
+            pygame.draw.circle(self.screen.image, self.fgColor, (x,y), param.PERCEPTION_RADIUS,1)
 
         for i in range(x - radius, x + radius + 1):
             for j in range(y - radius, y + radius + 1):

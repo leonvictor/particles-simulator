@@ -2,7 +2,7 @@ from Environment.envObj import *
 from MAS.Frustum.radiusFrustum import *
 import Parameters as param
 from scipy import constants as const
-
+from MAS.Behavior.cumulativeForcesBehavior import CumulativeForcesBehavior
 
 class Agent(EnvObj):
 
@@ -12,8 +12,8 @@ class Agent(EnvObj):
 
         self.behavior = behavior
         self.init_behavior(behavior)
-        self.speed = np.zeros(param.DIMENSIONS)
-        self.acceleration = np.zeros(param.DIMENSIONS)
+        self.speed = np.zeros(param.DIMENSION)
+        self.acceleration = np.zeros(param.DIMENSION)
 
         self.last_position = self.position
         self.expected_position = None
@@ -24,6 +24,10 @@ class Agent(EnvObj):
         self.kinetic_energy = 0
         self.color = (0, 0, 0)
         self.potential_energy = 0
+        if type(behavior) is CumulativeForcesBehavior:
+            self.fixed_color = None
+        else:
+            self.fixed_color = (0,0,0)
         #print("agent créé")
 
     def init_behavior(self, behavior):
@@ -106,3 +110,6 @@ class Agent(EnvObj):
     dipole_moment = property(_get_dipole_moment, _set_dipole_moment)
     stiffness = property(_get_stiffness, _set_stiffness)
     energy = property(_get_energy)
+
+    def get_color(self):
+        return self.color if self.fixed_color is None else self.fixed_color

@@ -117,17 +117,17 @@ class Environment:
         elif param.BORDER_MODE is param.BORDER_MODE.SOLID:
             # we need this loop in case a particle hits multiple borders during one time step
             while not all([-param.BOX_SIZE / 2 < x < param.BOX_SIZE / 2 for x in influence.position]):
-                for i in range(0, param.DIMENSIONS):
+                for i in range(0, param.DIMENSION):
                     # if np.linalg.absolute(influence.position[i]) > param.BOX_SIZE/2:
                     #     influence.position[i] = - (influence.position[i]
                     #                                + np.sign(influence.position[i])*param.BOX_SIZE/2
                     #                                - influence.agent.position[i])
                     if influence.position[i] > param.BOX_SIZE / 2:
-                        self.nb_border_collision += 1
+                        self.nb_border_collision += 1 * influence.agent.kinetic_energy
                         influence.position[i] = - (
                                 influence.position[i] - param.BOX_SIZE / 2 - influence.agent.position[i])
                     elif influence.position[i] < -param.BOX_SIZE / 2:
-                        self.nb_border_collision += 1
+                        self.nb_border_collision += 1 * influence.agent.kinetic_energy
                         influence.position[i] = -(
                                 influence.position[i] + param.BOX_SIZE / 2 - influence.agent.position[i])
         return influence
@@ -240,7 +240,7 @@ class Environment:
 
     def compute_volume(self):
         min, max = self.env_grid.get_bounds()
-        res = np.empty(param.DIMENSIONS)
+        res = np.empty(param.DIMENSION)
         for i in range(len(min)):
             res[i] = max[i] - min[i]
         volume = 1
@@ -322,7 +322,7 @@ class Environment:
             agent = agentListCopy.pop()
             for other in agentListCopy:
                 norm = np.linalg.norm(agent.position - other.position)
-                if norm < (dist_min_avg + 0.1 * ecart_type_min) \
+                if norm < (dist_min_avg + 0.2 * ecart_type_min) \
                         and agent.entropy_class != other.entropy_class:
                     new = min(agent.entropy_class, other.entropy_class)
                     old = max(agent.entropy_class, other.entropy_class)
@@ -349,10 +349,22 @@ class Environment:
 
     def compute_partition_function(self):
         partition_function = 0
-        thermodynamic_beta = 1/(const.Boltzmann * self.data_store.temperature[self.sequence])
+        temperature = self.data_store.temperature[self.sequence]
+        thermodynamic_beta = 1/(const.Boltzmann * temperature)
+        internal_energy = 0
 
         for agent in self.agent_list:
             partition_function += exp(-1*(thermodynamic_beta * agent.energy))
+            internal_energy += agent.energy
 
+        self.data_store.internal_energy[self.sequence] = internal_energy
         self.data_store.partition_function[self.sequence] = partition_function
-        self.data_store.free_energy[self.sequence] = -log(partition_function+1e-100)
+        self.data_store.thermodynamic_energy[self.sequence] = -log(partition_function + 1e-100)
+        self.data_store.free_energy[self.sequence] = - const.Boltzmann * temperature \
+                                                     * log(partition_function)
+        enthalpy = internal_energy + self.data_store.pressure[self.sequence]\
+                   * self.data_store.volume[self.sequence]
+        self.data_store.enthalpy[self.sequence] = enthalpy
+        self.data_store.free_enthalpy[self.sequence] = enthalpy - temperature\
+                                                       * self.data_store.entropy[self.sequence]
+
