@@ -238,6 +238,11 @@ class Gui:
         self.draw_dict("Free Enthalpy", self.env.data_store.free_enthalpy)
         plt.subplot(3, 2, 6)
         self.draw_dict("Free Energy", self.env.data_store.free_energy, show=True)
+        plt.subplot(3,2,1)
+        self.draw_dict("Ecart-type 1", self.env.data_store.dist_standard_deviation)
+        plt.subplot(3,2,2)
+        self.draw_dict("Ecart type 2", self.env.data_store.dist_standard_deviation2, show=True)
+
 
 
 

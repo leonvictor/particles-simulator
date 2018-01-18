@@ -261,6 +261,7 @@ class Environment:
         dist_avg = 0
         cmpt = 0
         dist_min_avg = 0
+        min_dists = np.zeros((1, len(agentListCopy2)))
         while len(agentListCopy) != 0:
             agent = agentListCopy.pop()
             agent.entropy_class = index_class
@@ -278,8 +279,10 @@ class Environment:
                     cmpt += 1
             if minimum is not None:
                 dist_min_avg += minimum
+                min_dists[0,index_class-1]=minimum
         dist_avg /= cmpt
         dist_min_avg /= len(self.agent_list)
+        self.data_store.dist_standard_deviation[self.sequence] = np.std(min_dists, 1)
         self.data_store.dist_avg[self.sequence] = dist_avg
         self.data_store.dist_min_avg[self.sequence] = dist_min_avg
 
@@ -304,6 +307,8 @@ class Environment:
                 ecart_type_min += (dist_min_avg - minimum)**2
         ecart_type = sqrt(ecart_type / cmpt)
         ecart_type_min = sqrt(ecart_type_min / len(self.agent_list))
+        self.data_store.dist_standard_deviation2[self.sequence] = np.std(min_dists, 1)
+
 
         #Classes pour l'entropie
         agentListCopy = list(self.agent_list)
