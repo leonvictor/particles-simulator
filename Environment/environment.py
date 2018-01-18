@@ -311,7 +311,7 @@ class Environment:
             agent = agentListCopy.pop()
             for other in agentListCopy:
                 norm = np.linalg.norm(agent.position - other.position)
-                if norm < (dist_min_avg + 0.3 * ecart_type_min) \
+                if norm < (dist_min_avg + 1 * ecart_type_min) \
                         and agent.entropy_class != other.entropy_class:
                     new = min(agent.entropy_class, other.entropy_class)
                     old = max(agent.entropy_class, other.entropy_class)

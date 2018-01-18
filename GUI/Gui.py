@@ -231,7 +231,7 @@ class Gui:
         plt.subplot(3, 2, 2)
         self.draw_dict("Thermodynamic potential", self.env.data_store.thermodynamic_potential)
         plt.subplot(3, 2, 3)
-        self.draw_dict("Average min dist", self.env.data_store.dist_min_avg)
+        self.draw_dict("Internal Energy", self.env.data_store.internal_energy)
         plt.subplot(3, 2, 4)
         self.draw_dict("Enthalpy", self.env.data_store.enthalpy)
         plt.subplot(3, 2, 5)
