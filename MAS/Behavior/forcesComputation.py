@@ -88,9 +88,9 @@ class ForcesComputation :
             """this is necessary for not but shouldn't happen anyway"""
             # if p.position.all != agent.position.all:
             if norm != 0:
-                spring = - agent.stiffness * (norm - param.SPRING_LENGTH)
+                spring = agent.stiffness * (norm - param.SPRING_LENGTH)
                 spring *= param.SPRING_FACTOR
-                unit_vector = (agent.position-p.position)/norm
+                unit_vector = (p.position - agent.position)/norm
                 interactions.append(spring * unit_vector)
 
         return np.sum(interactions, axis=0)

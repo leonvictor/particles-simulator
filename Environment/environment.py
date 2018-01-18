@@ -55,10 +55,6 @@ class Environment:
 
         self.data_store.temperature[self.sequence] = avrSpeed / (3 * self.gas_constant)
 
-        #name = (str(mass) + "_" + str(charge) + "_" + str(polarizability) +
-        #        "_" + str(dipole_moment) + "_" + str(self.sequence) + "_")
-        #self.env_grid.save(name)
-        #self.compute_entropy(name)
         self.compute_social_entropy()
         self.compute_volume()
         self.compute_pressure()
@@ -228,16 +224,6 @@ class Environment:
 
         return result
 
-    def compute_entropy(self, name):
-        entropy = 0
-        data = Environment.get_probability_grid_name_sequence(name)
-
-        for pi in data.values():
-            entropy += pi * log(pi)
-        entropy = - entropy / log(len(data) + 10e-10)
-
-        self.data_store.entropy[self.sequence] = entropy
-
     def compute_volume(self):
         min, max = self.env_grid.get_bounds()
         res = np.empty(param.DIMENSION)
@@ -359,7 +345,7 @@ class Environment:
 
         self.data_store.internal_energy[self.sequence] = internal_energy
         self.data_store.partition_function[self.sequence] = partition_function
-        self.data_store.thermodynamic_energy[self.sequence] = -log(partition_function + 1e-100)
+        self.data_store.thermodynamic_energy[self.sequence] = -log(partition_function)
         self.data_store.free_energy[self.sequence] = - const.Boltzmann * temperature \
                                                      * log(partition_function)
         enthalpy = internal_energy + self.data_store.pressure[self.sequence]\

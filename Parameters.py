@@ -9,7 +9,7 @@ class BorderMode(Enum):
 
 
 # Agents
-NB_AGENTS = 40
+NB_AGENTS = 60
 NB_RANDOM_AGENTS = 0
 RANDOM_ACC_FACTOR = 1e2
 PERCEPTION_RADIUS = 150
