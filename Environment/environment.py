@@ -255,6 +255,7 @@ class Environment:
 
         #Moyenne et classes par défaut
         agentListCopy = list(self.agent_list)
+        agentListCopy2 = list(self.agent_list)
         class_dict = {}
         index_class = 0
         dist_avg = 0
@@ -266,14 +267,15 @@ class Environment:
             class_dict[index_class] = [agent]
             index_class += 1
             minimum = None
-            for other in agentListCopy:
-                norm = np.linalg.norm(agent.position - other.position)
-                dist_avg += norm
-                if minimum is None:
-                    minimum = norm
-                else:
-                    minimum = min(minimum, norm)
-                cmpt += 1
+            for other in agentListCopy2:
+                if other != agent:
+                    norm = np.linalg.norm(agent.position - other.position)
+                    dist_avg += norm
+                    if minimum is None:
+                        minimum = norm
+                    else:
+                        minimum = min(minimum, norm)
+                    cmpt += 1
             if minimum is not None:
                 dist_min_avg += minimum
         dist_avg /= cmpt
@@ -289,14 +291,15 @@ class Environment:
         while len(agentListCopy) != 0:
             agent = agentListCopy.pop()
             minimum = None
-            for other in agentListCopy:
-                cmpt += 1
-                norm = np.linalg.norm(agent.position - other.position)
-                ecart_type += (dist_avg - norm)**2
-                if minimum is None:
-                    minimum = norm
-                else:
-                    minimum = min(minimum, norm)
+            for other in agentListCopy2:
+                if other != agent:
+                    cmpt += 1
+                    norm = np.linalg.norm(agent.position - other.position)
+                    ecart_type += (dist_avg - norm)**2
+                    if minimum is None:
+                        minimum = norm
+                    else:
+                        minimum = min(minimum, norm)
             if minimum is not None:
                 ecart_type_min += (dist_min_avg - minimum)**2
         ecart_type = sqrt(ecart_type / cmpt)
@@ -345,7 +348,7 @@ class Environment:
 
         self.data_store.internal_energy[self.sequence] = internal_energy
         self.data_store.partition_function[self.sequence] = partition_function
-        self.data_store.thermodynamic_energy[self.sequence] = -log(partition_function)
+        self.data_store.thermodynamic_potential[self.sequence] = -log(partition_function)
         self.data_store.free_energy[self.sequence] = - const.Boltzmann * temperature \
                                                      * log(partition_function)
         enthalpy = internal_energy + self.data_store.pressure[self.sequence]\

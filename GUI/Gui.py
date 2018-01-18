@@ -229,7 +229,7 @@ class Gui:
         self.draw_dict("Pressure (borders)", self.env.data_store.border_collision_range,
                        name_x="Time (" + str(param.DELTA_TIME * param.RANGE_COLLISIONS_GRAPH) + " s)")
         plt.subplot(3, 2, 2)
-        self.draw_dict("Thermodynamic energy", self.env.data_store.thermodynamic_energy)
+        self.draw_dict("Thermodynamic potential", self.env.data_store.thermodynamic_potential)
         plt.subplot(3, 2, 3)
         self.draw_dict("Average min dist", self.env.data_store.dist_min_avg)
         plt.subplot(3, 2, 4)

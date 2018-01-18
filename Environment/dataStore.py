@@ -11,7 +11,7 @@ class DataStore:
         self.dist_avg = {}
         self.border_collisions = {}
         self.partition_function = {}
-        self.thermodynamic_energy = {}
+        self.thermodynamic_potential = {}
         self.free_energy = {}
         self.dist_min_avg = {}
         self.internal_energy = {}
@@ -26,7 +26,7 @@ class DataStore:
         self.dist_avg.clear()
         self.border_collisions.clear()
         self.partition_function.clear()
-        self.thermodynamic_energy.clear()
+        self.thermodynamic_potential.clear()
         self.free_energy.clear()
         self.dist_min_avg.clear()
         self.internal_energy.clear()
