@@ -89,7 +89,7 @@ class ForcesComputation:
             if norm != 0:
                 spring = agent.stiffness * (norm - param.SPRING_LENGTH)
                 spring *= param.SPRING_FACTOR
-                unit_vector = (agent.position - p.position) / norm
+                unit_vector = (p.position - agent.position ) / norm
                 interactions.append(spring * unit_vector)
 
         return np.sum(interactions, axis=0)
