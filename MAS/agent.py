@@ -44,7 +44,7 @@ class Agent(EnvObj):
     def moved(self):
         """"Update speed and delta_time"""
         if self.expected_position is None:
-            self.expected_position = self.position
+             self.expected_position = self.position
         self.speed = (self.expected_position - self.last_position)
         self.speed /= param.DELTA_TIME
         self.kinetic_energy = 0.5 * self.mass * (np.linalg.norm(self.speed) ** 2)

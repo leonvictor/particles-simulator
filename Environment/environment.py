@@ -99,9 +99,9 @@ class Environment:
                     influence.position[i] = param.BOX_SIZE / 2 + influence.position[i] % (
                             -param.BOX_SIZE / 2)
             if out_of_border:
-                influence.agent.expectedPosition = position_saved
+                influence.agent.expected_position = position_saved
             else:
-                influence.agent.expectedPosition = None
+                influence.agent.expected_position = None
 
         elif param.BORDER_MODE is param.BorderMode.BASIC:
             # clamp influence so that particles remain in the environment
