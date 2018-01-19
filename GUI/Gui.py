@@ -220,11 +220,11 @@ class Gui:
         plt.subplot(3, 2, 4)
         self.draw_dict("Entropy", self.env.data_store.entropy)
         plt.subplot(3, 2, 5)
-        self.draw_dict_f_dict(self.env.data_store.temperature, self.env.data_store.pressure,
-                              "temperature", "pressure")
+        self.draw_dict_f_dict(self.env.data_store.pressure,self.env.data_store.temperature,
+                              "pressure", "temperature")
         plt.subplot(3, 2, 6)
-        self.draw_dict_f_dict(self.env.data_store.volume, self.env.data_store.pressure,
-                              "volume", "pressure", show=True)
+        self.draw_dict_f_dict(self.env.data_store.pressure, self.env.data_store.volume,
+                              "pressure", "volume", show=True)
         plt.subplot(3, 2, 1)
         self.draw_dict("Pressure (borders)", self.env.data_store.border_collision_range,
                        name_x="Time (" + str(param.DELTA_TIME * param.RANGE_COLLISIONS_GRAPH) + " s)")
