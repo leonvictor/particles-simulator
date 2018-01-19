@@ -17,6 +17,8 @@ class DataStore:
         self.internal_energy = {}
         self.enthalpy = {}
         self.free_enthalpy = {}
+        self.dist_standard_deviation = {}
+        self.dist_standard_deviation_min = {}
 
     def clear(self):
         self.temperature.clear()
@@ -32,6 +34,8 @@ class DataStore:
         self.internal_energy.clear()
         self.enthalpy.clear()
         self.free_enthalpy.clear()
+        self.dist_standard_deviation.clear()
+        self.dist_standard_deviation_min.clear()
 
     def _get_border_collision_range(self):
         cmpt = 0

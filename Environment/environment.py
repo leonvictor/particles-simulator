@@ -280,8 +280,10 @@ class Environment:
                 dist_min_avg += minimum
         dist_avg /= cmpt
         dist_min_avg /= len(self.agent_list)
+
         self.data_store.dist_avg[self.sequence] = dist_avg
         self.data_store.dist_min_avg[self.sequence] = dist_min_avg
+
 
         #Ecart type
         agentListCopy = list(self.agent_list)
@@ -304,6 +306,10 @@ class Environment:
                 ecart_type_min += (dist_min_avg - minimum)**2
         ecart_type = sqrt(ecart_type / cmpt)
         ecart_type_min = sqrt(ecart_type_min / len(self.agent_list))
+        #self.data_store.dist_standard_deviation_min[self.sequence] = ecart_type_min
+        self.data_store.dist_standard_deviation[self.sequence] = ecart_type
+        self.data_store.dist_standard_deviation_min[self.sequence] = ecart_type_min
+
 
         #Classes pour l'entropie
         agentListCopy = list(self.agent_list)
